@@ -1,0 +1,115 @@
+﻿@page "/sanpham"
+@inject HttpClient Http
+
+<PageTitle>Sản phẩm</PageTitle>
+
+<div class="row mt-3">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">Quản lý sản phẩm</div> <hr />
+                <div>
+                    <div class="row">
+                        <div class="form-group col-6 pr-0">
+                            <label>Mã sản phẩm</label>
+                            <input type="text" class="form-control" @bind="SanPham.Ma" placeholder="Nhập mã sản phẩm">
+                        </div>
+                        <div class="form-group col-6">
+                            <label>Tên sản phẩm</label>
+                            <input type="text" class="form-control" @bind="SanPham.Ten" placeholder="Nhập tên sản phẩm">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Create">Thêm sản phẩm</button>
+                        <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Update">Sửa sản phẩm</button>
+                    </div>
+                </div>
+                <h5 class="card-title">Danh sách sản phẩm</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">STT</th>
+                                <th style="width: 25%">Mã sản phẩm</th>
+                                <th style="width: 25%">Tên sản phẩm</th>
+                                <th style="width: 30%">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (SanPhams != null)
+                            {
+                                @foreach (var x in SanPhams.Select((value, i) => new { i, value }))
+                                {
+                                    <tr>
+                                        <th>@(x.i + 1)</th>
+                                        <td>@x.value.Ma</td>
+                                        <td>@x.value.Ten</td>
+                                        <td>
+                                            <button class="btn btn-success px-5" @onclick="() => Display(x.value.Id)">Sửa sản phẩm</button>
+                                            <button @onclick="() => Delete(x.value.Id)" class="btn btn-danger px-5">Xóa sản phẩm</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<SanPham>? SanPhams;
+    private SanPham SanPham = new SanPham();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using(var httpClient = new HttpClient()){
+            SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+        }
+    }
+
+    private async Task Create()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/sanpham", SanPham))
+            {
+                SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+            }
+        }
+    }
+
+    private async Task Delete(Guid? id)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/sanpham/" + id))
+            {
+                SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+            }
+        }
+    }
+
+    private async Task Update()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (await httpClient.PutAsJsonAsync<SanPham>("https://localhost:7033/api/sanpham/" + SanPham.Id, SanPham))
+            {
+                SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+            }
+        }
+    }
+
+    private async Task Display(Guid? id)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            var result = await httpClient.GetFromJsonAsync<SanPham>("https://localhost:7033/api/sanpham/" + id);
+            if (result != null)
+                SanPham = result;
+        }
+    }
+}

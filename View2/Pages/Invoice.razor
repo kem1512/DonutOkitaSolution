@@ -1,0 +1,102 @@
+﻿@page "/invoice"
+@using Data.ViewModels
+
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 d-flex align-items-center">
+                            <h3 class="mb-0">Hóa đơn</h3>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <div class="dropdown mb-0">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Tất cả
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item">Chưa hoàn thành</button>
+                                    <button class="dropdown-item">Đang giao</button>
+                                    <button class="dropdown-item">Đã hoàn thành</button>
+                                    <button class="dropdown-item">Đã hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Mã hóa đơn</th>
+                                <th>Tên người nhận</th>
+                                <th>Địa chỉ</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                var index = 0;
+                                @foreach (var x in Model.GroupBy(c => c.HoaDon?.Id))
+                                {
+                                    <tr>
+                                        <td>@(index += 1)</td>
+                                        <td>@x.First().HoaDon?.TenNguoiNhan</td>
+                                        <td>@x.First().HoaDon?.DiaChi</td>
+                                        <td>@(string.Format("{0:0,0}", x.Sum(c => c.HoaDonChiTiet?.DonGia * c.HoaDonChiTiet?.SoLuong))) VNĐ</td>
+                                        <td>
+                                            @{
+                                                var tinhtrang = x.First()?.HoaDon?.TinhTrang == 0 ? "Chưa hoành thành" : "Hoàn thành";
+                                            }
+                                            @tinhtrang
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-primary mr-3" href="/hoadonchitiet/@x.First().HoaDon?.Id">Xem chi tiết</a>
+                                            @if (@x.First().HoaDon?.TinhTrang == 0)
+                                            {
+                                                <a onclick="return confirm('Bạn có chắc muốn thanh toán?')" class="btn btn-danger" href="/hoadon/thanhtoan/@x.First().HoaDon?.Id">Xác nhận</a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<HoaDonViewModel>? Model;
+    private string Name = "";
+
+    protected async override Task OnInitializedAsync()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
+        }
+    }
+
+    private async Task Search()
+    {
+        if (Name.ToLower() != "")
+        {
+            using(var httpClient = new HttpClient()){
+                Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel/" + Name);
+            }
+        }
+        else
+        {
+            using(var httpClient = new HttpClient()){
+                Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
+            }
+        }
+    }
+}

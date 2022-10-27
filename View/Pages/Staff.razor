@@ -1,0 +1,218 @@
+﻿@page "/nhanvien"
+@inject HttpClient HttpClient
+
+<div class="row mt-3">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">Quản lý nhân viên</div>
+                <hr>
+                <EditForm Model="@NhanVien">
+                    <div class="row">
+                        <div class="form-group col-6 pr-0">
+                            <label>Mã nhân viên</label>
+                            <input type="text" class="form-control" @bind="NhanVien.Ma" placeholder="Nhập mã nhân viên">
+                        </div>
+                        <div class="form-group col-6">
+                            <label>Nhập họ tên nhân viên</label>
+                            <div class="row">
+                                <div class="col pr-0">
+                                    <input type="text" class="form-control" @bind="NhanVien.Ho" placeholder="Họ">
+                                </div>
+                                <div class="col pr-0">
+                                    <input type="text" class="form-control" @bind="NhanVien.Ten" placeholder="Tên">
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" @bind="NhanVien.TenDem" placeholder="Tên đệm">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-6 pr-0">
+                            <label>Giới tính</label>
+                            <InputSelect class="custom-select" @bind-Value="NhanVien.GioiTinh">
+                                <option value="null">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </InputSelect>
+                        </div>
+                        <div class="form-group col-6">
+                            <label>Ngày sinh nhân viên</label>
+                            <input type="date" @bind="NhanVien.NgaySinh" class="form-control">
+                        </div>
+                        <div class="form-group col-6 pr-0">
+                            <label>Địa chỉ nhân viên</label>
+                            <input type="text" @bind="NhanVien.DiaChi" class="form-control" placeholder="Nhập địa chỉ">
+                        </div>
+                        <div class="form-group col-6">
+                            <label>Số điện thoại nhân viên</label>
+                            <input type="text" @bind="NhanVien.Sdt" class="form-control" placeholder="Nhập số điện thoại nhân viên">
+                        </div>
+                        <div class="form-group col-3 pr-0">
+                            <label>Chức vụ</label>
+                            <InputSelect class="custom-select" @bind-Value="NhanVien.IdCv">
+                                @if(ChucVus != null){
+                                    <option value="null">Chọn chức vụ</option>
+                                    @foreach (var x in ChucVus)
+                                    {
+                                        <option value="@x.Id">@x.Ten</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="form-group col-3 pr-0">
+                            <label>Cửa hàng</label>
+                            <InputSelect class="custom-select" @bind-Value="NhanVien.IdCh">
+                                @if (CuaHangs != null)
+                                {
+                                    <option value="null">Chọn cửa hàng</option>
+                                    @foreach (var x in CuaHangs)
+                                    {
+                                        <option value="@x.Id">@x.Ten</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="form-group col-3 pr-0">
+                            <label>Gửi báo báo</label>
+                            <InputSelect class="custom-select" @bind-Value="NhanVien.IdGuiBc">
+                                @if (NhanViens != null)
+                                {
+                                    <option value="">Chọn nhân viên</option>
+                                    @foreach (var x in NhanViens)
+                                    {
+                                        <option value="@x.Id">@x.Ten</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="form-group col-3">
+                            <label>Mật khẩu</label>
+                            <input type="text" @bind="NhanVien.MatKhau" class="form-control" placeholder="Nhập mật khẩu">
+                        </div>
+                    </div>
+                    <div class="form-group py-2">
+                        <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Create">Thêm nhân viên</button>
+                        <button class="btn btn-success mr-2 px-5 mb-2" @onclick="Update">Sửa nhân viên</button>
+                        <a href="/cuahang" class="btn btn-warning mr-2 px-5">Thêm cửa hàng</a>
+                    </div>
+                </EditForm>
+                <h5 class="card-title">Danh sách chức vụ</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Mã chức vụ</th>
+                                <th>Họ và tên</th>
+                                <th>Giới tính</th>
+                                <th>Chức vụ</th>
+                                <th>Cửa hàng quản lý</th>
+                                <th>Số điện thoại</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (NhanVienViewModels != null)
+                            {
+                                @foreach (var x in NhanVienViewModels)
+                                {
+                                    <tr>
+                                        <td class="align-middle">@x.NhanVien?.Ma</td>
+                                        <td class="align-middle">@x.NhanVien?.Ho @x.NhanVien?.TenDem @x.NhanVien?.Ten</td>
+                                        <td class="align-middle">@x.NhanVien?.GioiTinh</td>
+                                        <td class="align-middle">@x.ChucVu?.Ten</td>
+                                        <td class="align-middle">@x.CuaHang?.Ten</td>
+                                        <td class="align-middle">@x.NhanVien?.Sdt</td>
+                                        <td class="align-middle">
+                                            <button class="btn btn-success" @onclick="() => Display(x.NhanVien?.Id)">Sửa</button>
+                                            <button class="btn btn-danger" @onclick="() => Delete(x.NhanVien?.Id)">Xóa</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="text-center">
+                                    <td class="pt-4" colspan="7">Không có dữ liệu</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code{
+    private List<CuaHang>? CuaHangs;
+    private List<ChucVu>? ChucVus;
+    private List<NhanVien>? NhanViens;
+    private List<NhanVienViewModel>? NhanVienViewModels;
+    private NhanVien NhanVien = new NhanVien();
+    private EditContext? editContext;
+
+    protected async override Task OnInitializedAsync()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
+            CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
+            ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+            NhanViens = await httpClient.GetFromJsonAsync<List<NhanVien>>("https://localhost:7033/api/nhanvien");
+        }
+    }
+
+    private async Task Create()
+    {
+        if (editContext?.GetValidationMessages().Any() ?? true)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/nhanvien", NhanVien))
+                {
+                    NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
+                    NhanVien = new NhanVien();
+                }
+            }
+        }
+    }
+
+    private async Task Delete(Guid? id)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (await httpClient.DeleteAsync("https://localhost:7033/api/nhanvien/" + id))
+            {
+                NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
+            }
+        }
+    }
+
+    private async Task Update()
+    {
+        if (editContext?.GetValidationMessages().Any() ?? true)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (await httpClient.PutAsJsonAsync<NhanVien>("https://localhost:7033/api/nhanvien/" + NhanVien.Id, NhanVien))
+                {
+                    NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
+                    NhanVien = new NhanVien();
+                }
+            }
+        }
+    }
+
+    private async Task Display(Guid? id)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            var result = await httpClient.GetFromJsonAsync<NhanVien>("https://localhost:7033/api/nhanvien/" + id);
+            if (result != null)
+                NhanVien = result;
+        }
+    }
+}

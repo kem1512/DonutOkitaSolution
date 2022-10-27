@@ -1,0 +1,113 @@
+﻿@page "/mausac"
+@inject HttpClient Http
+
+<PageTitle>Màu sắc</PageTitle>
+
+<div class="row mt-3">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="form-group col-6 pr-0">
+                            <label>Mã màu sắc</label>
+                            <input type="text" class="form-control" @bind="MauSac.Ma" placeholder="Nhập mã màu sắc">
+                        </div>
+                        <div class="form-group col-6">
+                            <label>Tên màu sắc</label>
+                            <input type="text" class="form-control" @bind="MauSac.Ten" placeholder="Nhập tên màu sắc">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Create">Thêm màu sắc</button>
+                        <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Update">Sửa màu sắc</button>
+                    </div>
+                </div>
+                <h5 class="card-title">Danh sách màu sắc</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">STT</th>
+                                <th style="width: 25%">Mã màu sắc</th>
+                                <th style="width: 25%">Tên màu sắc</th>
+                                <th style="width: 30%">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(MauSacs != null){
+                                @foreach (var x in MauSacs.Select((value, i) => new { i, value }))
+                                {
+                                    <tr>
+                                        <th>@(x.i + 1)</th>
+                                        <td>@x.value.Ma</td>
+                                        <td>@x.value.Ten</td>
+                                        <td>
+                                            <button class="btn btn-success px-5" @onclick="() => Display(x.value.Id)">Sửa màu sắc</button>
+                                            <button @onclick="() => Delete(x.value.Id)" class="btn btn-danger px-5">Xóa màu sắc</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<MauSac>? MauSacs;
+    private MauSac MauSac = new MauSac();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using(var httpClient = new HttpClient()){
+            MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+        }
+    }
+
+    private async Task Create()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/mausac", MauSac))
+            {
+                MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+            }
+        }
+    }
+
+    private async Task Delete(Guid? id)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/mausac/" + id))
+            {
+                MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+            }
+        }
+    }
+
+    private async Task Update()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (await httpClient.PutAsJsonAsync<MauSac>("https://localhost:7033/api/mausac/" + MauSac.Id, MauSac))
+            {
+                MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+            }
+        }
+    }
+
+    private async Task Display(Guid? id)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            var result = await httpClient.GetFromJsonAsync<MauSac>("https://localhost:7033/api/mausac/" + id);
+            if (result != null)
+                MauSac = result;
+        }
+    }
+}

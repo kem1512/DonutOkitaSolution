@@ -1,0 +1,236 @@
+﻿@page "/store"
+@page "/store/page/{CurrentPageIndex:int}"
+@using Data.DomainClass
+
+<PageTitle>Cửa hàng</PageTitle>
+
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <strong class="mb-0">Quản lý cửa hàng</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="CuaHang" OnValidSubmit="Create">
+                        <DataAnnotationsValidator />
+                        <div class="px-lg-4">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group focused">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-id">Mã cửa hàng</label>
+                                            <ValidationMessage For="@(() => CuaHang.Ma)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-id" @bind-value="CuaHang.Ma" class="form-control form-control-alternative" placeholder="Nhập mã cửa hàng">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-name">Tên cửa hàng</label>
+                                            <ValidationMessage For="@(() => CuaHang.Ten)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-name" @bind-value="CuaHang.Ten" class="form-control form-control-alternative" placeholder="Nhập tên cửa hàng">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-address">Địa chỉ cửa hàng</label>
+                                            <ValidationMessage For="@(() => CuaHang.DiaChi)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-address" @bind-value="CuaHang.DiaChi" class="form-control form-control-alternative" placeholder="Nhập địa chỉ cửa hàng">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-city">Thành phố</label>
+                                            <ValidationMessage For="@(() => CuaHang.ThanhPho)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-city" @bind-value="CuaHang.ThanhPho" class="form-control form-control-alternative" placeholder="Nhập tên thành phố">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-national">Quốc gia</label>
+                                            <ValidationMessage For="@(() => CuaHang.QuocGia)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-national" @bind-value="CuaHang.QuocGia" class="form-control form-control-alternative" placeholder="Nhập tên quốc gia">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    @if (CuaHang.Id == Guid.Empty)
+                                    {
+                                        <button type="submit" class="btn btn-info">Thêm</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" @onclick="() => Update(context)" class="btn btn-danger">Sửa</button>
+                                        <button type="button" class="btn btn-white" @onclick="Clear">Hủy</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card shadow">
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-lg-6 d-flex align-items-center">
+                            <h3 class="mb-0">Danh sách cửa hàng</h3>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <div class="dropdown mb-0">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hiển thị kết quả
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(10)">10</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(15)">15</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="width: 25%;">STT</th>
+                                <th style="width: 25%;">Mã cửa hàng</th>
+                                <th style="width: 25%;">Tên cửa hàng</th>
+                                <th style="width: 25%;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (CuaHangs != null)
+                            {
+                                @foreach (var x in CuaHangs.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                {
+                                    <tr>
+                                        <td>@(x.Index + 1)</td>
+                                        <td>@x.Value.Ma</td>
+                                        <td>@x.Value.Ten</td>
+                                        <td>
+                                            <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
+                                            <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer py-4">
+                    @if (CuaHangs != null)
+                    {
+                        <Pagination Model="CuaHangs" CurrentPageIndex="CurrentPageIndex" Namespace="store"></Pagination>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => Delete(CuaHang?.Id)" MethodClose="Clear"></Popup>
+    <Footer></Footer>
+</div>
+
+@code {
+    [Parameter]
+    public int CurrentPageIndex { get; set; } = 1;
+
+    private int MaxRow = 5;
+
+    private List<CuaHang>? CuaHangs;
+    private CuaHang CuaHang = new CuaHang();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
+        }
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        CurrentPageIndex = 1;
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void ChangeMaxRow(int maxRow)
+    {
+        MaxRow = maxRow;
+    }
+
+    private async Task Create(EditContext context)
+    {
+        if (context.Validate())
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/cuahang", CuaHang))
+                {
+                    if (response.IsSuccessStatusCode)
+                        CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
+                }
+                Clear();
+            }
+        }
+    }
+
+    private async Task Delete(Guid? id)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/cuahang/" + id))
+            {
+                if (response.IsSuccessStatusCode)
+                    CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
+            }
+            Clear();
+        }
+    }
+
+    private async Task Update(EditContext context)
+    {
+        if (context.Validate())
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.PutAsJsonAsync<CuaHang>("https://localhost:7033/api/cuahang/" + CuaHang.Id, CuaHang))
+                {
+                    if (response.IsSuccessStatusCode)
+                        CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
+                }
+                Clear();
+            }
+        }
+    }
+
+    private void Clear()
+    {
+        CuaHang = new CuaHang();
+    }
+
+    private void Display(Guid? id)
+    {
+        var CuaHang = CuaHangs?.FirstOrDefault(c => c.Id == id);
+        if (CuaHang != null) this.CuaHang = CuaHang;
+    }
+}

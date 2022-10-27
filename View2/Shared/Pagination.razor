@@ -1,0 +1,108 @@
+﻿@inject NavigationManager NavigationManager;
+
+@if (Model != null)
+{
+    <nav>
+        <ul class="pagination justify-content-end mb-0">
+            @if (CurrentPageIndex > 1)
+            {
+                <li class="page-item">
+                    <NavLink class="page-link" tabindex="-1" href="@ChangePage(1)">
+                        <i class="fas fa-angle-left"></i>
+                        <i class="fas fa-angle-left"></i>
+                        <span class="sr-only">First</span>
+                    </NavLink>
+                </li>
+                <li class="page-item">
+                    <NavLink class="page-link" tabindex="-1" href="@PrevPage()">
+                        <i class="fas fa-angle-left"></i>
+                        <span class="sr-only">Previous</span>
+                    </NavLink>
+                </li>
+            }
+            @if (PageCount > 1)
+            {
+                @foreach (int x in Enumerable.Range(1, PageCount))
+                {
+                    <li class="page-item @LinkActive(x)">
+                        <NavLink class="page-link" href="@ChangePage(x)">@x</NavLink>
+                    </li>
+                }
+            }
+            @if (CurrentPageIndex < PageCount)
+            {
+                <li class="page-item">
+                    <NavLink class="page-link" href="@NextPage()">
+                        <i class="fas fa-angle-right"></i>
+                        <span class="sr-only">Next</span>
+                    </NavLink>
+                </li>
+                <li class="page-item">
+                    <NavLink class="page-link" href="@ChangePage(PageCount)">
+                        <i class="fas fa-angle-right"></i>
+                        <i class="fas fa-angle-right"></i>
+                        <span class="sr-only">Last</span>
+                    </NavLink>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+@code {
+    [Parameter]
+    public int CurrentPageIndex { get; set; }
+
+    [Parameter]
+    public IEnumerable<object>? Model { get; set; }
+
+    [Parameter]
+    public string? Namespace { get; set; }
+
+    private int MaxRow = 5;
+
+    private int PageCount { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        if (Model != null)
+            PageCount = (int)Math.Ceiling(Model.Count() / (decimal)MaxRow);
+        return base.OnInitializedAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        if (CurrentPageIndex == 0) CurrentPageIndex = 1;
+        if (Model != null){
+            PageCount = (int)Math.Ceiling(Model.Count() / (decimal)MaxRow);
+            if(CurrentPageIndex > PageCount){
+                NavigationManager.NavigateTo($"/{Namespace}");
+            }
+        }
+        return base.OnParametersSetAsync();
+    }
+
+    private string ChangePage(int x)
+    {
+        return $"/{Namespace}/page/{x}";
+    }
+
+    private string NextPage()
+    {
+        return CurrentPageIndex > PageCount ? $"/{Namespace}/page/1" : $"/{Namespace}/page/{CurrentPageIndex + 1}";
+    }
+
+    private string PrevPage()
+    {
+        return CurrentPageIndex < 1 ? $"/{Namespace}/page/{PageCount}" : $"{Namespace}/page/{CurrentPageIndex - 1}";
+    }
+
+    private string LinkActive(int x)
+    {
+        if (CurrentPageIndex == x)
+        {
+            return "active";
+        }
+        return "";
+    }
+}

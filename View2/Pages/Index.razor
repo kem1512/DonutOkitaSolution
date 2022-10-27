@@ -1,0 +1,98 @@
+﻿@page "/"
+@using Data.ViewModels
+@inject ISessionStorageService Session;
+
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <strong class="mb-0">Danh sách sản phẩm</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body mt-2">
+                    <div class="px-lg-4">
+                        <div class="row">
+                            @if(SanPhamViewModels != null){
+                                @foreach (var x in SanPhamViewModels)
+                                {
+                                    <div class="col-lg-3 mr-auto text-left mb-4">
+                                        <div class="card shadow align-items-center" style="border-radius: 2.375rem;">
+                                            <img src="@x.ChiTietSp?.Anh" class="card-img-top p-4">
+                                            <div class="card-body pt-2">
+                                                <a href=""><h4 class="card-subtitle mb-2 text-muted text-uppercase">@x.SanPham?.Ten (@x.MauSac?.Ten)</h4></a>
+                                                <h3 class="card-text d-flex justify-content-between">
+                                                    @string.Format("{0:0,0}", x.ChiTietSp?.GiaBan) VNĐ
+                                                    <a href="" @onclick="() => AddCart(x.ChiTietSp?.Id)" style="font-size: 20px"><i class="ni ni-fat-add"></i></a>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CurrentPageIndex { get; set; }
+
+    private List<SanPhamViewModel>? SanPhamViewModels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+        }
+    }
+
+    private async Task<int> IsExist(Guid? id)
+    {
+        List<GioHangViewModel> cart = await Session.GetItemAsync<List<GioHangViewModel>>("cart");
+        if (cart != null)
+        {
+            for (int i = 0; i < cart.Count; i++)
+            {
+                var result = cart[i]?.SanPhamViewModel?.ChiTietSp?.Id.Equals(id);
+                if (result ?? false)
+                {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private async Task AddCart(Guid? id)
+    {
+        if (await Session.GetItemAsStringAsync("cart") == null)
+        {
+            List<GioHangViewModel> cart = new List<GioHangViewModel>();
+            cart.Add(new GioHangViewModel() { SanPhamViewModel = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id), Quantity = 1 });
+            await Session.SetItemAsync<List<GioHangViewModel>>("cart", cart);
+        }
+        else
+        {
+            List<GioHangViewModel> cart = await Session.GetItemAsync<List<GioHangViewModel>>("cart");
+            var index = await IsExist(id);
+            if (index != -1)
+            {
+                cart[index].Quantity++;
+            }
+            else
+            {
+                cart.Add(new GioHangViewModel { SanPhamViewModel = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id), Quantity = 1 });
+            }
+            await Session.SetItemAsync<List<GioHangViewModel>>("cart", cart);
+        }
+    }
+}
