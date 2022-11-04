@@ -1,0 +1,143 @@
+﻿@page "/invoicedetail"
+@page "/invoicedetail/{InvoiceId:guid}"
+@using Data.DomainClass
+@using Data.ViewModels
+
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <div class="card bg-secondary shadow mb-3">
+                <div class="card-header bg-white border-0">
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <strong class="mb-0">Thông tin hóa đơn</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="px-lg-4">
+                        <div class="row text-center mb-3">
+                            <div class="col-3">
+                                <div class="step">
+                                    <button style="border-radius: 20px; padding: 40px;" class="btn @ActiveStatus(0) mb-3"><i style="font-size: 35px" class="ni ni-single-copy-04"></i></button>
+                                    <h4 class="text-muted">Đã xác nhận</h4>
+                                    <p>10:10:10</p>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="step">
+                                    <button style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(1) mb-3"><i style="font-size: 35px" class="ni ni-check-bold"></i></button>
+                                    <h4 class="text-muted">Đang vận chuyển</h4>
+                                    @if (Status >= 2)
+                                    {
+                                        <p>@HoaDonViewModels?.First()?.HoaDon?.NgayShip</p>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="step">
+                                    <button @onclick="() => ChangeStatus(2)" style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(2) mb-3"><i style="font-size: 35px" class="ni ni-user-run"></i></button>
+                                    <h4 class="text-muted">Đã nhận hàng</h4>
+                                    @if (Status >= 2)
+                                    {
+                                        <p>@HoaDonViewModels?.First()?.HoaDon?.NgayNhan</p>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="step">
+                                    <button @onclick="() => ChangeStatus(3)" style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(3) mb-3"><i style="font-size: 35px" class="ni ni-bag-17"></i></button>
+                                    <h4 class="text-muted">Hoàn thành</h4>
+                                    @if (Status >= 3)
+                                    {
+                                        <p>@HoaDonViewModels?.First()?.HoaDon?.NgayThanhToan</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @if (HoaDonViewModels != null && SanPhamViewModels != null)
+                        {
+                            foreach (var x in HoaDonViewModels.GroupBy(c => c.HoaDon?.Id).Where(c => c.First().HoaDon?.Id == InvoiceId))
+                            {
+                                foreach (var y in SanPhamViewModels)
+                                {
+                                    <div class="row border shadow mb-3" style="background-color: white; border-radius: 25px">
+                                        <div class="d-flex align-items-center p-3">
+                                            <div class="col">
+                                                <a href=""><img src="@y.ChiTietSp?.Anh" class="w-50" /></a>
+                                            </div>
+                                            <div class="col">
+                                                <p>@y.SanPham?.Ten</p>
+                                                <p class="text-muted">Màu sắc : @y.MauSac?.Ten</p>
+                                            </div>
+                                            <div class="col">
+                                                <p><strong>@string.Format("{0:0,0}", y.ChiTietSp?.GiaBan) VNĐ</strong></p>
+                                            </div>
+                                            <div class="col">
+                                                <p>@x.First().HoaDon?.NgayTao</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                        <div class="row justify-content-end">
+                            <button class="btn btn-primary">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<HoaDonViewModel>? HoaDonViewModels;
+    private List<SanPhamViewModel>? SanPhamViewModels;
+    private int? Status = 0;
+
+    [Parameter]
+    public Guid InvoiceId { get; set; }
+
+    private string ActiveStatus(int val)
+    {
+        if (val <= Status)
+            return "btn-success";
+        return "";
+    }
+
+    private async Task ChangeStatus(int val)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            HoaDonViewModels[0].HoaDon.TinhTrang = val;
+            if (val == 1)
+            {
+                HoaDonViewModels[0].HoaDon.NgayShip = DateTime.Now;
+            }
+            else
+            {
+                HoaDonViewModels[0].HoaDon.NgayNhan = DateTime.Now;
+                HoaDonViewModels[0].HoaDon.NgayThanhToan = DateTime.Now;
+            }
+            using (var httpResponse = await httpClient.PutAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon/" + HoaDonViewModels[0].HoaDon.Id, HoaDonViewModels[0].HoaDon))
+            {
+                if (httpResponse.IsSuccessStatusCode)
+                    Status = val;
+            }
+        }
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            HoaDonViewModels = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
+            SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+            if (HoaDonViewModels != null)
+            {
+                Status = HoaDonViewModels?.First()?.HoaDon?.TinhTrang;
+            }
+        }
+    }
+}

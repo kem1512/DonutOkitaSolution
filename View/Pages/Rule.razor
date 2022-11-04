@@ -1,54 +1,108 @@
-﻿@page "/chucvu"
-@inject HttpClient Http
+﻿@page "/rule"
+@page "/rule/page/{CurrentPageIndex:int}"
+@using Data.DomainClass
 
 <PageTitle>Chức vụ</PageTitle>
 
-<div class="row mt-3">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Quản lý chức vụ</div> <hr />
-                <div>
-                    <div class="row">
-                        <div class="form-group col-6 pr-0">
-                            <label>Mã chức vụ</label>
-                            <input type="text" class="form-control" @bind="ChucVu.Ma" placeholder="Nhập mã chức vụ">
-                        </div>
-                        <div class="form-group col-6">
-                            <label>Tên chức vụ</label>
-                            <input type="text" class="form-control" @bind="ChucVu.Ten" placeholder="Nhập tên chức vụ">
-                        </div>
-                    </div>
-                    <div class="form-group row">
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    <div class="row align-items-center">
                         <div class="col">
-                            <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Create">Thêm chức vụ</button>
-                            <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Update">Sửa chức vụ</button>
+                            <strong class="mb-0">Quản lý chức vụ</strong>
                         </div>
                     </div>
                 </div>
-                <h5 class="card-title">Danh sách chức vụ</h5>
+                <div class="card-body">
+                    <EditForm Model="ChucVu" OnValidSubmit="Create">
+                        <DataAnnotationsValidator />
+                        <div class="px-lg-4">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group focused">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-id">Mã chức vụ</label>
+                                            <ValidationMessage For="@(() => ChucVu.Ma)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-id" @bind-value="ChucVu.Ma" class="form-control form-control-alternative" placeholder="Nhập mã chức vụ">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-name">Tên chức vụ</label>
+                                            <ValidationMessage For="@(() => ChucVu.Ten)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-name" @bind-value="ChucVu.Ten" class="form-control form-control-alternative" placeholder="Nhập tên chức vụ">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    @if (ChucVu.Id == Guid.Empty)
+                                    {
+                                        <button type="submit" class="btn btn-info">Thêm</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" @onclick="() => Update(context)" class="btn btn-danger">Sửa</button>
+                                        <button type="button" class="btn btn-white" @onclick="Clear">Hủy</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card shadow">
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-lg-6 d-flex align-items-center">
+                            <h3 class="mb-0">Danh sách chức vụ</h3>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <div class="dropdown mb-0">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hiển thị kết quả
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(10)">10</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(15)">15</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
                             <tr>
-                                <th style="width: 20%">STT</th>
-                                <th style="width: 25%">Mã chức vụ</th>
-                                <th style="width: 25%">Tên chức vụ</th>
-                                <th style="width: 30%">Thao tác</th>
+                                <th style="width: 25%;">STT</th>
+                                <th style="width: 25%;">Mã chức vụ</th>
+                                <th style="width: 25%;">Tên chức vụ</th>
+                                <th style="width: 25%;">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if (ChucVus != null)
                             {
-                                @foreach (var x in ChucVus.Select((value, i) => new { i, value }))
+                                @foreach (var x in ChucVus.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
                                 {
                                     <tr>
-                                        <th>@(x.i + 1)</th>
-                                        <td>@x.value.Ma</td>
-                                        <td>@x.value.Ten</td>
+                                        <td>@(x.Index + 1)</td>
+                                        <td>@x.Value.Ma</td>
+                                        <td>@x.Value.Ten</td>
                                         <td>
-                                            <button class="btn btn-success px-5" @onclick="() => Display(x.value.Id)">Sửa chức vụ</button>
-                                            <button @onclick="() => Delete(x.value.Id)" class="btn btn-danger px-5">Xóa chức vụ</button>
+                                            <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
+                                            <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
                                         </td>
                                     </tr>
                                 }
@@ -56,29 +110,62 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="card-footer py-4">
+                    @if (ChucVus != null)
+                    {
+                        <Pagination Model="ChucVus" CurrentPageIndex="CurrentPageIndex" Namespace="rule"></Pagination>
+                    }
+                </div>
             </div>
         </div>
     </div>
+    <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => Delete(ChucVu?.Id)"></Popup>
+    <Footer></Footer>
 </div>
 
 @code {
+    [Parameter]
+    public int CurrentPageIndex { get; set; }
+
+    private int MaxRow = 5;
+
     private List<ChucVu>? ChucVus;
     private ChucVu ChucVu = new ChucVu();
 
+    private void ChangeMaxRow(int maxRow)
+    {
+        MaxRow = maxRow;
+    }
+
+    private string LinkActive(int x)
+    {
+        if (CurrentPageIndex == x)
+        {
+            return "active";
+        }
+        return "";
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        using(var httpClient = new HttpClient()){
+        using (var httpClient = new HttpClient())
+        {
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
         }
     }
 
-    private async Task Create()
+    private async Task Create(EditContext context)
     {
-        using (var httpClient = new HttpClient())
+        if (context.Validate())
         {
-            using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chucvu", ChucVu))
+            using (var httpClient = new HttpClient())
             {
-                ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chucvu", ChucVu))
+                {
+                    if (response.IsSuccessStatusCode)
+                        ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+                }
+                Clear();
             }
         }
     }
@@ -89,29 +176,37 @@
         {
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/chucvu/" + id))
             {
-                ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+                if (response.IsSuccessStatusCode)
+                    ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
             }
+            Clear();
         }
     }
 
-    private async Task Update()
+    private async Task Update(EditContext context)
     {
-        using (var httpClient = new HttpClient())
+        if (context.Validate())
         {
-            using (await httpClient.PutAsJsonAsync<ChucVu>("https://localhost:7033/api/chucvu/" + ChucVu.Id, ChucVu))
+            using (var httpClient = new HttpClient())
             {
-                ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+                using (var response = await httpClient.PutAsJsonAsync<ChucVu>("https://localhost:7033/api/chucvu/" + ChucVu.Id, ChucVu))
+                {
+                    if (response.IsSuccessStatusCode)
+                        ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+                }
+                Clear();
             }
         }
     }
 
-    private async Task Display(Guid? id)
+    private void Clear()
     {
-        using (var httpClient = new HttpClient())
-        {
-            var result = await httpClient.GetFromJsonAsync<ChucVu>("https://localhost:7033/api/chucvu/" + id);
-            if (result != null)
-                ChucVu = result;
-        }
+        ChucVu = new ChucVu();
+    }
+
+    private void Display(Guid? id)
+    {
+        var ChucVu = ChucVus?.FirstOrDefault(c => c.Id == id);
+        if (ChucVu != null) this.ChucVu = ChucVu;
     }
 }

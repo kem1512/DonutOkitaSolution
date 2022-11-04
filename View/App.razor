@@ -4,9 +4,17 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
+        <PageTitle>Không tồn tại</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <div class="container-fluid mt--7">
+                <div class="row">
+                    <div class="col-xl-12 order-xl-1">
+                        <div class="card bg-secondary shadow font-weight-bold" style="height: 200px;display: flex;justify-content: center;align-items: center;">
+                            <h3><strong>Không tồn tại</strong></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </LayoutView>
     </NotFound>
 </Router>

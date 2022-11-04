@@ -1,138 +1,195 @@
-﻿@page "/chitietsp"
-@inject HttpClient HttpClient
-@inject IJSRuntime JSRuntime
+﻿@page "/productdetail"
+@page "/productdetail/page/{CurrentPageIndex:int}"
+@using Data.DomainClass
+@using Data.ViewModels
 
 <PageTitle>Sản phẩm</PageTitle>
-<div class="row mt-3">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Quản lý sản phẩm chi tiết</div> <hr/>
-                <EditForm Model="@ChiTietSp">
-                    <DataAnnotationsValidator />
-                    <div class="row">
-                        <div class="form-group col-6 pr-0">
-                            <div class="d-flex justify-content-between">
-                                <label>Sản phẩm</label>
-                                <ValidationMessage For="@(() => ChiTietSp.IdSp)"></ValidationMessage>
-                            </div>
-                            <InputSelect class="custom-select" @bind-Value="ChiTietSp.IdSp">
-                                @if (SanPhams != null)
-                                {
-                                    <option value>Chọn sản phẩm</option>
-                                    @foreach (var x in SanPhams)
-                                    {
-                                        <option value="@x.Id">@x.Ten</option>
-                                    }
-                                }
-                            </InputSelect>
+
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <strong class="mb-0">Quản lý sản phẩm</strong>
                         </div>
-                        <div class="form-group col-6">
-                            <label>Năm bảo hành</label>
-                            <InputNumber class="form-control" name="NamBh" @bind-Value="ChiTietSp.NamBh" placeholder="Nhập năm bảo hành"></InputNumber>
-                        </div>
-                        <div class="form-group col-3 pr-0">
-                            <label>Giá nhập</label>
-                            <InputNumber type="number" class="form-control" name="GiaNhap" @bind-Value="ChiTietSp.GiaNhap" placeholder="Nhập tên giá nhập"></InputNumber>
-                        </div>
-                        <div class="form-group col-3 pr-0">
-                            <label>Giá bán </label>
-                            <InputNumber type="number" class="form-control" name="GiaBan" @bind-Value="ChiTietSp.GiaBan" placeholder="Nhập giá bán"></InputNumber>
-                        </div>
-                        <div class="form-group col-6">
-                            <label>Số lượng tồn kho </label>
-                            <InputNumber type="number" class="form-control" name="SoLuongTon" @bind-Value="ChiTietSp.SoLuongTon" placeholder="Nhập số lượng tồn kho"></InputNumber>
-                        </div>
-                        <div class="form-group col-6 pr-0">
-                            <div class="d-flex justify-content-between">
-                                <label>Nhà sản xuất</label>
-                                <ValidationMessage For="@(() => ChiTietSp.IdNsx)"></ValidationMessage>
-                            </div>
-                            <InputSelect class="custom-select" @bind-Value="ChiTietSp.IdNsx">
-                                @if (Nsxs != null)
-                                {
-                                    <option value>Chọn nhà sản xuất</option>
-                                    @foreach (var x in Nsxs)
-                                    {
-                                        <option value="@x.Id">@x.Ten</option>
-                                    }
-                                }
-                            </InputSelect>
-                        </div>
-                        <div class="form-group col-6">
-                            <div class="d-flex justify-content-between">
-                                <label>Màu sắc</label>
-                                <ValidationMessage For="@(() => ChiTietSp.IdMauSac)"></ValidationMessage>
-                            </div>
-                            <InputSelect class="custom-select" @bind-Value="ChiTietSp.IdMauSac">
-                                @if (MauSacs != null)
-                                {
-                                    <option value>Chọn màu sắc</option>
-                                    @foreach (var x in MauSacs)
-                                    {
-                                        <option value="@x.Id">@x.Ten</option>
-                                    }
-                                }
-                            </InputSelect>
-                        </div>
-                        <div class="form-group col-6 pr-0">
-                            <div class="d-flex justify-content-between">
-                                <label>Dòng sản phẩm</label>
-                                <ValidationMessage For="@(() => ChiTietSp.IdDongSp)"></ValidationMessage>
-                            </div>
-                            <InputSelect class="custom-select" @bind-Value="ChiTietSp.IdDongSp">
-                                @if (DongSps != null)
-                                {
-                                    <option value>Chọn dòng sản phẩm</option>
-                                    @foreach (var x in DongSps)
-                                    {
-                                        <option value="@x.Id">@x.Ten</option>
-                                    }
-                                }
-                            </InputSelect>
-                        </div>
-                        <div class="form-group col-6">
-                            <div class="d-flex justify-content-between">
-                                <label>Ảnh sản phẩm</label> <br />
-                                <ValidationMessage class="text-warning font-weight-bold" For="@(() => ChiTietSp.Anh)"></ValidationMessage>
-                            </div>
-                            <InputText class="form-control" @bind-Value="ChiTietSp.Anh" placeholder="Nhập link ảnh sản phẩm"></InputText>
+                        <div class="col-6 text-right">
+                            <NavLink class="btn btn-sm btn-info" href="/color">Màu sắc</NavLink>
+                            <NavLink class="btn btn-sm btn-warning" href="/category">Dòng sản phẩm</NavLink>
+                            <NavLink class="btn btn-sm btn-success" href="/producer">Nhà sản xuất</NavLink>
+                            <NavLink class="btn btn-sm btn-secondary" href="/product">Sản phẩm</NavLink>
                         </div>
                     </div>
-                    <div class="form-group d-flex justify-content-between">
-                        <div>
-                            @if(ChiTietSp.Id == Guid.Empty){
-                                <button type="submit" class="btn btn-success px-5 mr-1" @onclick="Create">Thêm</button>
-                            }else{
-                                <button class="btn btn-warning px-5 mr-1" @onclick="Update">Sửa</button>
-                                <button class="btn btn-danger px-5" @onclick="Clear">Hủy</button>
-                            }
-                        </div>
-                        <div>
-                            <NavLink href="SanPham" class="btn btn-danger px-5 w-100">Sản phẩm</NavLink>
-                        </div>
-@*                        <div class="col-8">
+                </div>
+                <div class="card-body">
+                    <EditForm Model="ChiTietSp" OnValidSubmit="Create">
+                        <DataAnnotationsValidator />
+                        <div class="px-lg-4">
                             <div class="row">
-                               <div class="col-6">
-                                    <NavLink href="SanPham" class="btn btn-danger px-5 w-100">Sản phẩm</NavLink>
-                               </div>
-                                <div class="col-6">
-                                    <NavLink href="MauSac" class="btn btn-info px-5 w-100">Màu sắc</NavLink>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label">Sản phẩm</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.IdSp)"></ValidationMessage>
+                                        </div>
+                                        <InputSelect @bind-Value="ChiTietSp.IdSp" class="form-control" data-toggle="select">
+                                            @if (SanPhams != null)
+                                            {
+                                                <option value="">Chọn chức vụ</option>
+                                                @foreach (var x in SanPhams)
+                                                {
+                                                    <option value="@x.Id">@x.Ten</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <NavLink href="Nsx" class="btn btn-secondary px-5 w-100">Nhà sản xuất</NavLink>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-year">Năm bảo hành</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.NamBh)"></ValidationMessage>
+                                        </div>
+                                        <input type="number" id="input-year" @bind-value="ChiTietSp.NamBh" class="form-control form-control-alternative" placeholder="Nhập năm bảo hành">
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <NavLink href="DongSp" class="btn btn-success px-5 w-100">Dòng sản phẩm</NavLink>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-cost">Giá nhập</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.GiaNhap)"></ValidationMessage>
+                                        </div>
+                                        <input type="number" id="input-cost" @bind-value="ChiTietSp.GiaNhap" class="form-control form-control-alternative" placeholder="Nhập giá nhập">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-price">Giá bán</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.GiaBan)"></ValidationMessage>
+                                        </div>
+                                        <input type="number" id="input-price" @bind-value="ChiTietSp.GiaBan" class="form-control form-control-alternative" placeholder="Nhập giá bán">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-quantity">Số lượng tồn</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.SoLuongTon)"></ValidationMessage>
+                                        </div>
+                                        <input type="number" id="input-quantity" @bind-value="ChiTietSp.SoLuongTon" class="form-control form-control-alternative" placeholder="Nhập số lượng">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label">Nhà sản xuất</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.IdNsx)"></ValidationMessage>
+                                        </div>
+                                        <InputSelect @bind-Value="ChiTietSp.IdNsx" class="form-control" data-toggle="select">
+                                            @if (Nsxs != null)
+                                            {
+                                                <option value="">Chọn nhà sản xuất</option>
+                                                @foreach (var x in Nsxs)
+                                                {
+                                                    <option value="@x.Id">@x.Ten</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label">Nhà màu sắc</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.IdMauSac)"></ValidationMessage>
+                                        </div>
+                                        <InputSelect @bind-Value="ChiTietSp.IdMauSac" class="form-control" data-toggle="select">
+                                            @if (MauSacs != null)
+                                            {
+                                                <option value="">Chọn màu sắc</option>
+                                                @foreach (var x in MauSacs)
+                                                {
+                                                    <option value="@x.Id">@x.Ten</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label">Dòng sản phẩm</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.IdDongSp)"></ValidationMessage>
+                                        </div>
+                                        <InputSelect @bind-Value="ChiTietSp.IdDongSp" class="form-control" data-toggle="select">
+                                            @if (DongSps != null)
+                                            {
+                                                <option value="">Chọn dòng sản phẩm</option>
+                                                @foreach (var x in DongSps)
+                                                {
+                                                    <option value="@x.Id">@x.Ten</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-quantity">Ảnh sản phẩm</label>
+                                            <ValidationMessage For="@(() => ChiTietSp.Anh)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-quantity" @bind-value="ChiTietSp.Anh" class="form-control form-control-alternative" placeholder="Nhập đường dẫn">
+                                    </div>
                                 </div>
                             </div>
-                        </div>*@
+                            <div class="row">
+                                <div class="col">
+                                    @if (ChiTietSp.Id == Guid.Empty)
+                                    {
+                                        <button type="submit" class="btn btn-info">Thêm</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" @onclick="() => Update(context)" class="btn btn-danger">Sửa</button>
+                                        <button type="button" class="btn btn-white" @onclick="Clear">Hủy</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card shadow">
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-lg-6 d-flex align-items-center">
+                            <h3 class="mb-0">Danh sách cửa hàng</h3>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <div class="dropdown mb-0">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hiển thị kết quả
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(10)">10</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(15)">15</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </EditForm>
-                <h5 class="card-title">Danh sách sản phẩm</h5>
+                </div>
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
                             <tr>
                                 <th>STT</th>
                                 <th>Tên sản phẩm</th>
@@ -147,19 +204,19 @@
                         <tbody>
                             @if (SanPhamViewModels != null)
                             {
-                                @foreach (var x in SanPhamViewModels.Select((value, i) => new { i, value }))
+                                @foreach (var x in SanPhamViewModels.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
                                 {
                                     <tr>
-                                        <td>@(x.i + 1)</td>
-                                        <td>@x.value.SanPham?.Ten</td>
-                                        <td>@x.value.MauSac?.Ten</td>
-                                        <td>@x.value.Nsx?.Ten</td>
-                                        <td>@string.Format("{0:0,0}", x.value.ChiTietSp?.GiaNhap)</td>
-                                        <td>@string.Format("{0:0,0}", x.value.ChiTietSp?.GiaBan)</td>
-                                        <td>@x.value.ChiTietSp?.SoLuongTon</td>
+                                        <td>@(x.Index + 1)</td>
+                                        <td>@x.Value.SanPham?.Ten</td>
+                                        <td>@x.Value.MauSac?.Ten</td>
+                                        <td>@x.Value.Nsx?.Ten</td>
+                                        <td>@string.Format("{0:0,0}", x.Value.ChiTietSp?.GiaNhap)</td>
+                                        <td>@string.Format("{0:0,0}", x.Value.ChiTietSp?.GiaBan)</td>
+                                        <td>@x.Value.ChiTietSp?.SoLuongTon</td>
                                         <td>
-                                            <button class="btn btn-success" @onclick="() => Display(x.value.ChiTietSp?.Id)">Sửa</button>
-                                            <button class="btn btn-danger" @onclick="() => Delete(x.value.ChiTietSp?.Id)">Xóa</button>
+                                            <button class="btn btn-warning" @onclick="() => Display(x.Value.ChiTietSp?.Id)">Sửa</button>
+                                            <button class="btn btn-danger" @onclick="() => Display(x.Value.ChiTietSp?.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
                                         </td>
                                     </tr>
                                 }
@@ -167,22 +224,34 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="card-footer py-4">
+                    @if (SanPhamViewModels != null)
+                    {
+                        <Pagination Model="SanPhamViewModels" CurrentPageIndex="CurrentPageIndex" Namespace="productdetail"></Pagination>
+                    }
+                </div>
             </div>
         </div>
     </div>
+    <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => Delete(ChiTietSp?.Id)"></Popup>
+    <Footer></Footer>
 </div>
 
 @code {
+    [Parameter]
+    public int CurrentPageIndex { get; set; } = 1;
+
+    private int MaxRow = 5;
+
     private List<SanPham>? SanPhams;
     private List<MauSac>? MauSacs;
     private List<Nsx>? Nsxs;
     private List<DongSp>? DongSps;
     private List<SanPhamViewModel>? SanPhamViewModels;
     private ChiTietSp ChiTietSp = new ChiTietSp();
-    private EditContext? editContext;
+
     protected override async Task OnInitializedAsync()
     {
-        editContext = new EditContext(ChiTietSp);
         using (var httpClient = new HttpClient())
         {
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
@@ -193,16 +262,29 @@
         }
     }
 
-    private async Task Create()
+    protected override Task OnParametersSetAsync()
     {
-        if(editContext?.GetValidationMessages().Any() ?? true){
+        if (CurrentPageIndex == 0) CurrentPageIndex = 1;
+        return base.OnParametersSetAsync();
+    }
+
+    private void ChangeMaxRow(int maxRow)
+    {
+        MaxRow = maxRow;
+    }
+
+    private async Task Create(EditContext context)
+    {
+        if (context.Validate())
+        {
             using (var httpClient = new HttpClient())
             {
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chitietsp", ChiTietSp))
                 {
-                    SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
-                    ChiTietSp = new ChiTietSp();
+                    if (response.IsSuccessStatusCode)
+                        SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
                 }
+                Clear();
             }
         }
     }
@@ -211,39 +293,39 @@
     {
         using (var httpClient = new HttpClient())
         {
-            using (await httpClient.DeleteAsync("https://localhost:7033/api/chitietsp/" + id))
+            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/chitietsp/" + id))
             {
-                SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+                if (response.IsSuccessStatusCode)
+                    SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
             }
+            Clear();
         }
     }
 
-    private async Task Update()
+    private async Task Update(EditContext context)
     {
-        if (editContext?.GetValidationMessages().Any() ?? true)
-        { 
+        if (context.Validate())
+        {
             using (var httpClient = new HttpClient())
             {
-                using (await httpClient.PutAsJsonAsync<ChiTietSp>("https://localhost:7033/api/chitietsp/" + ChiTietSp.Id, ChiTietSp))
+                using (var response = await httpClient.PutAsJsonAsync<ChiTietSp>("https://localhost:7033/api/chitietsp/" + ChiTietSp.Id, ChiTietSp))
                 {
-                    SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
-                    ChiTietSp = new ChiTietSp();
+                    if (response.IsSuccessStatusCode)
+                        SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
                 }
+                Clear();
             }
         }
     }
 
-    private async Task Display(Guid? id)
+    private void Clear()
     {
-        using (var httpClient = new HttpClient())
-        {
-            var result = await httpClient.GetFromJsonAsync<ChiTietSp>("https://localhost:7033/api/chitietsp/" + id);
-            if(result != null)
-                ChiTietSp = result;
-        }
+        ChiTietSp = new ChiTietSp();
     }
 
-    private void Clear(){
-        ChiTietSp = new ChiTietSp();
+    private void Display(Guid? id)
+    {
+        var ChiTietSp = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id)?.ChiTietSp;
+        if (ChiTietSp != null) this.ChiTietSp = ChiTietSp;
     }
 }

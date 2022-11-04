@@ -1,8 +1,8 @@
-﻿@page "/color"
-@page "/color/page/{CurrentPageIndex:int}"
+﻿@page "/category"
+@page "/category/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
 
-<PageTitle>Màu sắc</PageTitle>
+<PageTitle>Dòng sản phẩm</PageTitle>
 
 <div class="container-fluid mt--7">
     <div class="row">
@@ -11,37 +11,37 @@
                 <div class="card-header bg-white border-0">
                     <div class="row align-items-center">
                         <div class="col">
-                            <strong class="mb-0">Quản lý màu sắc</strong>
+                            <strong class="mb-0">Quản lý dòng sản phẩm</strong>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <EditForm Model="MauSac" OnValidSubmit="Create">
+                    <EditForm Model="DongSp" OnValidSubmit="Create">
                         <DataAnnotationsValidator />
                         <div class="px-lg-4">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group focused">
                                         <div class="d-flex justify-content-between">
-                                            <label class="form-control-label" for="input-id">Mã màu sắc</label>
-                                            <ValidationMessage For="@(() => MauSac.Ma)"></ValidationMessage>
+                                            <label class="form-control-label" for="input-id">Mã dòng sản phẩm</label>
+                                            <ValidationMessage For="@(() => DongSp.Ma)"></ValidationMessage>
                                         </div>
-                                        <input type="text" id="input-id" @bind-value="MauSac.Ma" class="form-control form-control-alternative" placeholder="Nhập mã màu sắc">
+                                        <input type="text" id="input-id" @bind-value="DongSp.Ma" class="form-control form-control-alternative" placeholder="Nhập mã dòng sản phẩm">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <div class="d-flex justify-content-between">
-                                            <label class="form-control-label" for="input-name">Tên màu sắc</label>
-                                            <ValidationMessage For="@(() => MauSac.Ten)"></ValidationMessage>
+                                            <label class="form-control-label" for="input-name">Tên dòng sản phẩm</label>
+                                            <ValidationMessage For="@(() => DongSp.Ten)"></ValidationMessage>
                                         </div>
-                                        <input type="text" id="input-name" @bind-value="MauSac.Ten" class="form-control form-control-alternative" placeholder="Nhập tên màu sắc">
+                                        <input type="text" id="input-name" @bind-value="DongSp.Ten" class="form-control form-control-alternative" placeholder="Nhập tên dòng sản phẩm">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    @if (MauSac.Id == Guid.Empty)
+                                    @if (DongSp.Id == Guid.Empty)
                                     {
                                         <button type="submit" class="btn btn-info">Thêm</button>
                                     }
@@ -65,7 +65,7 @@
                 <div class="card-header border-0">
                     <div class="row">
                         <div class="col-lg-6 d-flex align-items-center">
-                            <h3 class="mb-0">Danh sách màu sắc</h3>
+                            <h3 class="mb-0">Danh sách dòng sản phẩm</h3>
                         </div>
                         <div class="col-lg-6 text-right">
                             <div class="dropdown mb-0">
@@ -86,15 +86,15 @@
                         <thead class="thead-light">
                             <tr>
                                 <th style="width: 25%;">STT</th>
-                                <th style="width: 25%;">Mã màu sắc</th>
-                                <th style="width: 25%;">Tên màu sắc</th>
+                                <th style="width: 25%;">Mã dòng sản phẩm</th>
+                                <th style="width: 25%;">Tên dòng sản phẩm</th>
                                 <th style="width: 25%;">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if (MauSacs != null)
+                            @if (DongSps != null)
                             {
-                                @foreach (var x in MauSacs.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                @foreach (var x in DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -111,15 +111,14 @@
                     </table>
                 </div>
                 <div class="card-footer py-4">
-                    @if (MauSacs != null)
-                    {
-                        <Pagination Model="MauSacs" CurrentPageIndex="CurrentPageIndex" Namespace="color"></Pagination>
+                    @if(DongSps != null){
+                        <Pagination Model="DongSps" CurrentPageIndex="CurrentPageIndex" Namespace="category"></Pagination>
                     }
                 </div>
             </div>
         </div>
     </div>
-    <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => Delete(MauSac?.Id)"></Popup>
+    <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => Delete(DongSp?.Id)"></Popup>
     <Footer></Footer>
 </div>
 
@@ -129,14 +128,19 @@
 
     private int MaxRow = 5;
 
-    private List<MauSac>? MauSacs;
-    private MauSac MauSac = new MauSac();
+    private List<DongSp>? DongSps;
+    private DongSp DongSp = new DongSp();
+
+    private void ChangeMaxRow(int maxRow)
+    {
+        MaxRow = maxRow;
+    }
 
     protected override async Task OnInitializedAsync()
     {
         using (var httpClient = new HttpClient())
         {
-            MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+            DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
         }
     }
 
@@ -146,21 +150,16 @@
         return base.OnParametersSetAsync();
     }
 
-    private void ChangeMaxRow(int maxRow)
-    {
-        MaxRow = maxRow;
-    }
-
     private async Task Create(EditContext context)
     {
         if (context.Validate())
         {
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/mausac", MauSac))
+                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/dongsp", DongSp))
                 {
                     if (response.IsSuccessStatusCode)
-                        MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+                        DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
                 }
                 Clear();
             }
@@ -171,10 +170,10 @@
     {
         using (var httpClient = new HttpClient())
         {
-            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/mausac/" + id))
+            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/dongsp/" + id))
             {
                 if (response.IsSuccessStatusCode)
-                    MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+                    DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
             }
             Clear();
         }
@@ -186,10 +185,10 @@
         {
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.PutAsJsonAsync<MauSac>("https://localhost:7033/api/mausac/" + MauSac.Id, MauSac))
+                using (var response = await httpClient.PutAsJsonAsync<DongSp>("https://localhost:7033/api/dongsp/" + DongSp.Id, DongSp))
                 {
                     if (response.IsSuccessStatusCode)
-                        MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+                        DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
                 }
                 Clear();
             }
@@ -198,12 +197,12 @@
 
     private void Clear()
     {
-        MauSac = new MauSac();
+        DongSp = new DongSp();
     }
 
     private void Display(Guid? id)
     {
-        var MauSac = MauSacs?.FirstOrDefault(c => c.Id == id);
-        if (MauSac != null) this.MauSac = MauSac;
+        var DongSp = DongSps?.FirstOrDefault(c => c.Id == id);
+        if (DongSp != null) this.DongSp = DongSp;
     }
 }

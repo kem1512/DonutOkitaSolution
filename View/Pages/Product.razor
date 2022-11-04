@@ -1,52 +1,108 @@
-﻿@page "/sanpham"
-@inject HttpClient Http
+﻿@page "/product"
+@page "/product/page/{CurrentPageIndex:int}"
+@using Data.DomainClass
 
 <PageTitle>Sản phẩm</PageTitle>
 
-<div class="row mt-3">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Quản lý sản phẩm</div> <hr />
-                <div>
-                    <div class="row">
-                        <div class="form-group col-6 pr-0">
-                            <label>Mã sản phẩm</label>
-                            <input type="text" class="form-control" @bind="SanPham.Ma" placeholder="Nhập mã sản phẩm">
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <div class="card bg-secondary shadow">
+                <div class="card-header bg-white border-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <strong class="mb-0">Quản lý sản phẩm</strong>
                         </div>
-                        <div class="form-group col-6">
-                            <label>Tên sản phẩm</label>
-                            <input type="text" class="form-control" @bind="SanPham.Ten" placeholder="Nhập tên sản phẩm">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Create">Thêm sản phẩm</button>
-                        <button class="btn btn-light px-5 mr-2 mb-2" @onclick="Update">Sửa sản phẩm</button>
                     </div>
                 </div>
-                <h5 class="card-title">Danh sách sản phẩm</h5>
+                <div class="card-body">
+                    <EditForm Model="SanPham" OnValidSubmit="Create">
+                        <DataAnnotationsValidator />
+                        <div class="px-lg-4">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group focused">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-id">Mã sản phẩm</label>
+                                            <ValidationMessage For="@(() => SanPham.Ma)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-id" @bind-value="SanPham.Ma" class="form-control form-control-alternative" placeholder="Nhập mã sản phẩm">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-control-label" for="input-name">Tên sản phẩm</label>
+                                            <ValidationMessage For="@(() => SanPham.Ten)"></ValidationMessage>
+                                        </div>
+                                        <input type="text" id="input-name" @bind-value="SanPham.Ten" class="form-control form-control-alternative" placeholder="Nhập tên sản phẩm">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    @if (SanPham.Id == Guid.Empty)
+                                    {
+                                        <button type="submit" class="btn btn-info">Thêm</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" @onclick="() => Update(context)" class="btn btn-danger">Sửa</button>
+                                        <button type="button" class="btn btn-white" @onclick="Clear">Hủy</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card shadow">
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-lg-6 d-flex align-items-center">
+                            <h3 class="mb-0">Danh sách sản phẩm</h3>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <div class="dropdown mb-0">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hiển thị kết quả
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(10)">10</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(15)">15</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
                             <tr>
-                                <th style="width: 20%">STT</th>
-                                <th style="width: 25%">Mã sản phẩm</th>
-                                <th style="width: 25%">Tên sản phẩm</th>
-                                <th style="width: 30%">Thao tác</th>
+                                <th style="width: 25%;">STT</th>
+                                <th style="width: 25%;">Mã sản phẩm</th>
+                                <th style="width: 25%;">Tên sản phẩm</th>
+                                <th style="width: 25%;">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if (SanPhams != null)
                             {
-                                @foreach (var x in SanPhams.Select((value, i) => new { i, value }))
+                                @foreach (var x in SanPhams.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
                                 {
                                     <tr>
-                                        <th>@(x.i + 1)</th>
-                                        <td>@x.value.Ma</td>
-                                        <td>@x.value.Ten</td>
+                                        <td>@(x.Index + 1)</td>
+                                        <td>@x.Value.Ma</td>
+                                        <td>@x.Value.Ten</td>
                                         <td>
-                                            <button class="btn btn-success px-5" @onclick="() => Display(x.value.Id)">Sửa sản phẩm</button>
-                                            <button @onclick="() => Delete(x.value.Id)" class="btn btn-danger px-5">Xóa sản phẩm</button>
+                                            <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
+                                            <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
                                         </td>
                                     </tr>
                                 }
@@ -54,29 +110,59 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="card-footer py-4">
+                    @if (SanPhams != null)
+                    {
+                        <Pagination Model="SanPhams" CurrentPageIndex="CurrentPageIndex" Namespace="product"></Pagination>
+                    }
+                </div>
             </div>
         </div>
     </div>
+    <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => Delete(SanPham?.Id)"></Popup>
+    <Footer></Footer>
 </div>
 
 @code {
+    [Parameter]
+    public int CurrentPageIndex { get; set; }
+
+    private int MaxRow = 5;
+
     private List<SanPham>? SanPhams;
     private SanPham SanPham = new SanPham();
 
+    private void ChangeMaxRow(int maxRow)
+    {
+        MaxRow = maxRow;
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        using(var httpClient = new HttpClient()){
+        using (var httpClient = new HttpClient())
+        {
             SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
         }
     }
 
-    private async Task Create()
+    protected override Task OnParametersSetAsync()
     {
-        using (var httpClient = new HttpClient())
+        if (CurrentPageIndex == 0) CurrentPageIndex = 1;
+        return base.OnParametersSetAsync();
+    }
+
+    private async Task Create(EditContext context)
+    {
+        if (context.Validate())
         {
-            using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/sanpham", SanPham))
+            using (var httpClient = new HttpClient())
             {
-                SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/sanpham", SanPham))
+                {
+                    if (response.IsSuccessStatusCode)
+                        SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+                }
+                Clear();
             }
         }
     }
@@ -87,29 +173,37 @@
         {
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/sanpham/" + id))
             {
-                SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+                if (response.IsSuccessStatusCode)
+                    SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
             }
+            Clear();
         }
     }
 
-    private async Task Update()
+    private async Task Update(EditContext context)
     {
-        using (var httpClient = new HttpClient())
+        if (context.Validate())
         {
-            using (await httpClient.PutAsJsonAsync<SanPham>("https://localhost:7033/api/sanpham/" + SanPham.Id, SanPham))
+            using (var httpClient = new HttpClient())
             {
-                SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+                using (var response = await httpClient.PutAsJsonAsync<SanPham>("https://localhost:7033/api/sanpham/" + SanPham.Id, SanPham))
+                {
+                    if (response.IsSuccessStatusCode)
+                        SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
+                }
+                Clear();
             }
         }
     }
 
-    private async Task Display(Guid? id)
+    private void Clear()
     {
-        using (var httpClient = new HttpClient())
-        {
-            var result = await httpClient.GetFromJsonAsync<SanPham>("https://localhost:7033/api/sanpham/" + id);
-            if (result != null)
-                SanPham = result;
-        }
+        SanPham = new SanPham();
+    }
+
+    private void Display(Guid? id)
+    {
+        var SanPham = SanPhams?.FirstOrDefault(c => c.Id == id);
+        if (SanPham != null) this.SanPham = SanPham;
     }
 }

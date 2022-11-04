@@ -1,1 +1,0 @@
-var showAlert = (e) => toastr.success(e);
