@@ -30,9 +30,9 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool?> IsLogin(string phone, string password)
+        public async Task<NhanVien?> IsLogin(string phone, string password)
         {
-            var result = _iNhanVienRepository.GetAll().Result.Any(c => c.Sdt == phone && c.MatKhau == password);
+            var result = _iNhanVienRepository.GetAll().Result.FirstOrDefault(c => c.Sdt == phone && c.MatKhau == password);
             return await Task.FromResult(result);
         }
 

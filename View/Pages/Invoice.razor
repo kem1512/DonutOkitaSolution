@@ -1,5 +1,7 @@
 ﻿@page "/invoice"
 @using Data.ViewModels
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <div class="container-fluid mt--7">
     <div class="row">
@@ -78,6 +80,7 @@
 
     protected async override Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");

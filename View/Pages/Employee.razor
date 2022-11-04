@@ -2,6 +2,8 @@
 @page "/employee/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
 @using Data.ViewModels
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <PageTitle>Nhân viên</PageTitle>
 
@@ -269,6 +271,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");

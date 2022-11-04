@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Data.ViewModels
-@inject ISessionStorageService Session;
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <div class="container-fluid mt--7">
     <div class="row">
@@ -52,6 +53,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");

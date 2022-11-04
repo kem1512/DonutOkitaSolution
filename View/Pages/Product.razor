@@ -1,6 +1,8 @@
 ﻿@page "/product"
 @page "/product/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <PageTitle>Sản phẩm</PageTitle>
 
@@ -139,6 +141,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");

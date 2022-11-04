@@ -14,6 +14,6 @@ namespace Api.IServices
 
         Task<NhanVien?> GetById(Guid Id);
 
-        Task<bool?> IsLogin(string phone, string password);
+        Task<NhanVien?> IsLogin(string phone, string password);
     }
 }

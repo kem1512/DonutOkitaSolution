@@ -2,6 +2,7 @@
 @using Data.DomainClass
 @using Data.ViewModels
 @inject ISessionStorageService Session;
+@inject NavigationManager NavigationManager
 
 <div class="main-content bg-default">
     <!-- Header -->
@@ -82,6 +83,7 @@
 
     protected async override Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") != null) NavigationManager.NavigateTo("/");
         using (var httpClient = new HttpClient())
         {
             NhanViens = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");

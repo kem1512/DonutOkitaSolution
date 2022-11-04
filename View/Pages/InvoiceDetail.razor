@@ -2,6 +2,8 @@
 @page "/invoicedetail/{InvoiceId:guid}"
 @using Data.DomainClass
 @using Data.ViewModels
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <div class="container-fluid mt--7">
     <div class="row">

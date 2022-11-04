@@ -1,6 +1,8 @@
 ﻿@page "/store"
 @page "/store/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <PageTitle>Cửa hàng</PageTitle>
 
@@ -161,6 +163,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");

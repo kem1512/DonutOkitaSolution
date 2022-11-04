@@ -4,6 +4,7 @@ using Data.DomainClass;
 using Data.ViewModels;
 using Api.Services;
 using Api.IServices;
+using Newtonsoft.Json;
 
 namespace Api.Controllers
 {
@@ -46,17 +47,17 @@ namespace Api.Controllers
             return Ok(result);
         }
 
-        // GET: api/nhanvien/5
         [HttpGet("{phone}/{password}")]
         public async Task<ActionResult<NhanVien>> Get(string phone, string password)
         {
             var result = await _iNhanVienService.IsLogin(phone, password);
 
-            if (!result.Value)
+            if (result == null)
             {
                 return NotFound();
             }
 
+            HttpContext.Session.SetString("isLogin", JsonConvert.SerializeObject(result));
             return Ok(result);
         }
 

@@ -1,6 +1,8 @@
 ﻿@page "/producer"
 @page "/producer/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <PageTitle>Nhà sản xuất</PageTitle>
 
@@ -137,17 +139,9 @@
         MaxRow = maxRow;
     }
 
-    private string LinkActive(int x)
-    {
-        if (CurrentPageIndex == x)
-        {
-            return "active";
-        }
-        return "";
-    }
-
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");

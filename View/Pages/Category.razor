@@ -1,6 +1,8 @@
 ﻿@page "/category"
 @page "/category/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <PageTitle>Dòng sản phẩm</PageTitle>
 
@@ -138,6 +140,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");

@@ -1,6 +1,8 @@
 ﻿@page "/color"
 @page "/color/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <PageTitle>Màu sắc</PageTitle>
 
@@ -134,6 +136,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");

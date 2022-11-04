@@ -2,7 +2,8 @@
 @page "/rule/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
 @using System.Net.Http.Headers
-@inject ISessionStorageService Session;
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
 
 <PageTitle>Chức vụ</PageTitle>
 
@@ -141,6 +142,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));

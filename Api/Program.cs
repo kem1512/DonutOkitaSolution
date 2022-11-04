@@ -15,8 +15,15 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 
+builder.Services.AddSession(c =>
+    {
+        c.IOTimeout = TimeSpan.FromHours(1);
+    }
+);
 builder.Services.AddControllers().AddNewtonsoftJson(option => option.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
 builder.Services.AddDbContext<DonutOkitaContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("DonutOkita")));
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
@@ -39,7 +46,7 @@ app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();;
+app.UseAuthentication(); ;
 
 app.UseAuthorization();
 
