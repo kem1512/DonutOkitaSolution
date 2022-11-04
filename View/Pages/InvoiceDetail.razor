@@ -94,8 +94,8 @@
 </div>
 
 @code {
-    private List<HoaDonViewModel>? HoaDonViewModels;
-    private List<SanPhamViewModel>? SanPhamViewModels;
+    private List<HoaDonViewModel>? HoaDonViewModels = new List<HoaDonViewModel>();
+    private List<SanPhamViewModel>? SanPhamViewModels = new List<SanPhamViewModel>();
     private int? Status = 0;
 
     [Parameter]
@@ -112,20 +112,25 @@
     {
         using (var httpClient = new HttpClient())
         {
-            HoaDonViewModels[0].HoaDon.TinhTrang = val;
-            if (val == 1)
-            {
-                HoaDonViewModels[0].HoaDon.NgayShip = DateTime.Now;
-            }
-            else
-            {
-                HoaDonViewModels[0].HoaDon.NgayNhan = DateTime.Now;
-                HoaDonViewModels[0].HoaDon.NgayThanhToan = DateTime.Now;
-            }
-            using (var httpResponse = await httpClient.PutAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon/" + HoaDonViewModels[0].HoaDon.Id, HoaDonViewModels[0].HoaDon))
-            {
-                if (httpResponse.IsSuccessStatusCode)
-                    Status = val;
+            if(HoaDonViewModels != null){
+                if (HoaDonViewModels.First().HoaDon != null)
+                {
+                    HoaDonViewModels.First().HoaDon.TinhTrang = val;
+                    if (val == 1)
+                    {
+                        HoaDonViewModels.First().HoaDon.NgayShip = DateTime.Now;
+                    }
+                    else
+                    {
+                        HoaDonViewModels[0].HoaDon.NgayNhan = DateTime.Now;
+                        HoaDonViewModels[0].HoaDon.NgayThanhToan = DateTime.Now;
+                    }
+                    using (var httpResponse = await httpClient.PutAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon/" + HoaDonViewModels[0].HoaDon.Id, HoaDonViewModels[0].HoaDon))
+                    {
+                        if (httpResponse.IsSuccessStatusCode)
+                            Status = val;
+                    }
+                }
             }
         }
     }

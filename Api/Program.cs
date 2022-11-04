@@ -20,6 +20,9 @@ builder.Services.AddSession(c =>
         c.IOTimeout = TimeSpan.FromHours(1);
     }
 );
+
+builder.Services.AddMvc();
+
 builder.Services.AddControllers().AddNewtonsoftJson(option => option.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
 builder.Services.AddDbContext<DonutOkitaContext>(c => c.UseSqlServer(builder.Configuration.GetConnectionString("DonutOkita")));
@@ -51,5 +54,7 @@ app.UseAuthentication(); ;
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSession();
 
 app.Run();

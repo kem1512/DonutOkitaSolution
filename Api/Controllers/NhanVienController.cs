@@ -5,9 +5,11 @@ using Data.ViewModels;
 using Api.Services;
 using Api.IServices;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class NhanVienController : ControllerBase
@@ -44,20 +46,6 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            return Ok(result);
-        }
-
-        [HttpGet("{phone}/{password}")]
-        public async Task<ActionResult<NhanVien>> Get(string phone, string password)
-        {
-            var result = await _iNhanVienService.IsLogin(phone, password);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            HttpContext.Session.SetString("isLogin", JsonConvert.SerializeObject(result));
             return Ok(result);
         }
 

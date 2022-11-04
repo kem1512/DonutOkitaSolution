@@ -4,9 +4,11 @@ using Data.DomainClass;
 using Data.ViewModels;
 using Api.Services;
 using Api.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ChiTietSpController : ControllerBase

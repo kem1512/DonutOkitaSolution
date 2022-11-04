@@ -96,12 +96,21 @@
             {
                 if (x.NhanVien?.Sdt == NhanVien.Sdt && x.NhanVien?.MatKhau == NhanVien.MatKhau)
                 {
-                    using (var httpClient = new HttpClient())
-                    {
-                        var result = await httpClient.PostAsJsonAsync<NhanVien>("https://localhost:7033/api/token", x.NhanVien);
-                        await Session.SetItemAsStringAsync("jwt", result.Content.ReadAsStringAsync().Result);
+                    if(x.NhanVien != null){
+                        using (var httpClient = new HttpClient())
+                        {
+                            using (var httpResponse = await httpClient.PostAsJsonAsync<NhanVien>("https://localhost:7033/api/nhanvien/login", x.NhanVien))
+                            {
+                                if (httpResponse.IsSuccessStatusCode)
+                                {
+                                    var result = await httpClient.PostAsJsonAsync<NhanVien>("https://localhost:7033/api/token", x.NhanVien);
+                                    await Session.SetItemAsStringAsync("jwt", result.Content.ReadAsStringAsync().Result);
+                                    NavigationManager.NavigateTo("/");
+                                }
+                            }
+                        }
+                        return;
                     }
-                    return;
                 }
                 else
                 {
