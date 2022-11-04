@@ -24,9 +24,10 @@ namespace Api.Services
             return await _iHoaDonRepository.GetAll();
         }
 
-        public async Task<HoaDon?> GetByProperties<T>(T val)
+        public async Task<HoaDon?> GetById(Guid id)
         {
-            return await _iHoaDonRepository.GetByProperties(val);
+            var result = _iHoaDonRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(HoaDon hd)

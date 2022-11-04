@@ -1,6 +1,8 @@
 ﻿@page "/rule"
 @page "/rule/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@using System.Net.Http.Headers
+@inject ISessionStorageService Session;
 
 <PageTitle>Chức vụ</PageTitle>
 
@@ -137,19 +139,11 @@
         MaxRow = maxRow;
     }
 
-    private string LinkActive(int x)
-    {
-        if (CurrentPageIndex == x)
-        {
-            return "active";
-        }
-        return "";
-    }
-
     protected override async Task OnInitializedAsync()
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
         }
     }
@@ -160,6 +154,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chucvu", ChucVu))
                 {
                     if (response.IsSuccessStatusCode)
@@ -174,6 +169,7 @@
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/chucvu/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -189,6 +185,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync<ChucVu>("https://localhost:7033/api/chucvu/" + ChucVu.Id, ChucVu))
                 {
                     if (response.IsSuccessStatusCode)

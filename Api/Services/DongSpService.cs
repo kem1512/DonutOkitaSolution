@@ -24,9 +24,10 @@ namespace Api.Services
             return await _iDongSpRepository.GetAll();
         }
 
-        public async Task<DongSp?> GetByProperties<T>(T val)
+        public async Task<DongSp?> GetById(Guid id)
         {
-            return await _iDongSpRepository.GetByProperties(val);
+            var result = _iDongSpRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(DongSp dsp)

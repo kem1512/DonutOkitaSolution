@@ -24,9 +24,10 @@ namespace Api.Services
             return await _iHoaDonChiTietRepository.GetAll();
         }
 
-        public async Task<HoaDonChiTiet?> GetByProperties<T>(T val)
+        public async Task<HoaDonChiTiet?> GetById(Guid id)
         {
-            return await _iHoaDonChiTietRepository.GetByProperties(val);
+            var result = _iHoaDonChiTietRepository.GetAll().Result.FirstOrDefault(c => c.IdChiTietSp == id);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(HoaDonChiTiet hdct)

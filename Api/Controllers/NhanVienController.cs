@@ -36,9 +36,23 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<NhanVien>> Get(Guid id)
         {
-            var result = await _iNhanVienService.GetByProperties(id);
+            var result = await _iNhanVienService.GetById(id);
 
             if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        // GET: api/nhanvien/5
+        [HttpGet("{phone}/{password}")]
+        public async Task<ActionResult<NhanVien>> Get(string phone, string password)
+        {
+            var result = await _iNhanVienService.IsLogin(phone, password);
+
+            if (!result.Value)
             {
                 return NotFound();
             }
@@ -79,7 +93,7 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iNhanVienService.GetByProperties(id);
+            var result = await _iNhanVienService.GetById(id);
 
             if (result == null)
             {

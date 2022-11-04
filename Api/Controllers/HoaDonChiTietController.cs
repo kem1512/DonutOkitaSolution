@@ -71,7 +71,7 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iHoaDonChiTietService.GetByProperties(id);
+            var result = await _iHoaDonChiTietService.GetById(id);
 
             if (result == null)
             {

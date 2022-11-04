@@ -12,6 +12,6 @@ namespace Api.IServices
 
         Task<bool> Remove(MauSac ms);
 
-        Task<MauSac?> GetByProperties<T>(T val);
+        Task<MauSac?> GetById(Guid Id);
     }
 }

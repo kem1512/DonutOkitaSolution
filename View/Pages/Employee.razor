@@ -267,15 +267,6 @@
         MaxRow = maxRow;
     }
 
-    private string LinkActive(int x)
-    {
-        if (CurrentPageIndex == x)
-        {
-            return "active";
-        }
-        return "";
-    }
-
     protected override async Task OnInitializedAsync()
     {
         using (var httpClient = new HttpClient())

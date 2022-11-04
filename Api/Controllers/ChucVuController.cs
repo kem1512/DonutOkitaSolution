@@ -4,9 +4,12 @@ using Data.DomainClass;
 using Data.ViewModels;
 using Api.Services;
 using Api.IServices;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ChucVuController : ControllerBase
@@ -28,7 +31,7 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ChucVu>> Get(Guid id)
         {
-            var result = await _iChucVuService.GetByProperties(id);
+            var result = await _iChucVuService.GetById(id);
 
             if (result == null)
             {
@@ -71,7 +74,7 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iChucVuService.GetByProperties(id);
+            var result = await _iChucVuService.GetById(id);
 
             if (result == null)
             {

@@ -12,6 +12,6 @@ namespace Api.IServices
 
         Task<bool> Remove(DongSp dsp);
 
-        Task<DongSp?> GetByProperties<T>(T val);
+        Task<DongSp?> GetById(Guid Id);
     }
 }

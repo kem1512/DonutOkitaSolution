@@ -24,9 +24,16 @@ namespace Api.Services
             return await _iNhanVienRepository.GetAll();
         }
 
-        public async Task<NhanVien?> GetByProperties<T>(T val)
+        public async Task<NhanVien?> GetById(Guid id)
         {
-            return await _iNhanVienRepository.GetByProperties(val);
+            var result = _iNhanVienRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
+        }
+
+        public async Task<bool?> IsLogin(string phone, string password)
+        {
+            var result = _iNhanVienRepository.GetAll().Result.Any(c => c.Sdt == phone && c.MatKhau == password);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(NhanVien nv)

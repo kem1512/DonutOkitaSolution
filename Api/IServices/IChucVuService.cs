@@ -12,6 +12,6 @@ namespace Api.IServices
 
         Task<bool> Remove(ChucVu cv);
 
-        Task<ChucVu?> GetByProperties<T>(T val);
+        Task<ChucVu?> GetById(Guid Id);
     }
 }

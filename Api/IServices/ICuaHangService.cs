@@ -12,6 +12,6 @@ namespace Api.IServices
 
         Task<bool> Remove(CuaHang ch);
 
-        Task<CuaHang?> GetByProperties<T>(T val);
+        Task<CuaHang?> GetById(Guid Id);
     }
 }

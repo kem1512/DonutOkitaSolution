@@ -12,6 +12,8 @@ namespace Api.IServices
 
         Task<bool> Remove(NhanVien nv);
 
-        Task<NhanVien?> GetByProperties<T>(T val);
+        Task<NhanVien?> GetById(Guid Id);
+
+        Task<bool?> IsLogin(string phone, string password);
     }
 }

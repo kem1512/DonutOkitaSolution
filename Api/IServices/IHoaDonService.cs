@@ -13,6 +13,6 @@ namespace Api.IServices
 
         Task<bool> Remove(HoaDon ctsp);
 
-        Task<HoaDon?> GetByProperties<T>(T val);
+        Task<HoaDon?> GetById(Guid Id);
     }
 }

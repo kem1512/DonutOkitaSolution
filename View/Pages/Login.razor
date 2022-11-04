@@ -1,4 +1,7 @@
 ﻿@page "/login"
+@using Data.DomainClass
+@using Data.ViewModels
+@inject ISessionStorageService Session;
 
 <div class="main-content bg-default">
     <!-- Header -->
@@ -37,7 +40,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                                     </div>
-                                    <input class="form-control" placeholder="Email" type="email">
+                                    <input class="form-control" placeholder="Nhập số điện thoại" type="text" @bind="NhanVien.Sdt">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -45,7 +48,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                                     </div>
-                                    <input class="form-control" placeholder="Password" type="password">
+                                    <input class="form-control" placeholder="Nhập mật khẩu" type="password" @bind="NhanVien.MatKhau">
                                 </div>
                             </div>
                             <div class="custom-control custom-control-alternative custom-checkbox">
@@ -55,7 +58,7 @@
                                 </label>
                             </div>
                             <div class="text-center">
-                                <button type="button" class="btn btn-primary my-4">Sign in</button>
+                                <button type="button" class="btn btn-primary my-4" @onclick="SignIn">Sign in</button>
                             </div>
                         </form>
                     </div>
@@ -74,5 +77,35 @@
 </div>
 
 @code {
+    private NhanVien NhanVien = new NhanVien();
+    private List<NhanVienViewModel>? NhanViens;
 
+    protected async override Task OnInitializedAsync()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            NhanViens = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
+        }
+    }
+
+    private async Task SignIn(){
+        if(NhanViens != null){
+            foreach (var x in NhanViens)
+            {
+                if (x.NhanVien?.Sdt == NhanVien.Sdt && x.NhanVien?.MatKhau == NhanVien.MatKhau)
+                {
+                    using (var httpClient = new HttpClient())
+                    {
+                        var result = await httpClient.PostAsJsonAsync<NhanVien>("https://localhost:7033/api/token", x.NhanVien);
+                        await Session.SetItemAsStringAsync("jwt", result.Content.ReadAsStringAsync().Result);
+                    }
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Failed");
+                }
+            }
+        }
+    }
 }

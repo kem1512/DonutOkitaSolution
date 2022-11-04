@@ -24,9 +24,10 @@ namespace Api.Services
             return await _iMauSacRepository.GetAll();
         }
 
-        public async Task<MauSac?> GetByProperties<T>(T val)
+        public async Task<MauSac?> GetById(Guid id)
         {
-            return await _iMauSacRepository.GetByProperties(val);
+            var result = _iMauSacRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(MauSac ms)

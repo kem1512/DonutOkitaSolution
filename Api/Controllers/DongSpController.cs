@@ -28,7 +28,7 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<DongSp>> Get(Guid id)
         {
-            var result = await _iDongSpService.GetByProperties(id);
+            var result = await _iDongSpService.GetById(id);
 
             if (result == null)
             {
@@ -71,7 +71,7 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iDongSpService.GetByProperties(id);
+            var result = await _iDongSpService.GetById(id);
 
             if (result == null)
             {

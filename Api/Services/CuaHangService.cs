@@ -24,9 +24,10 @@ namespace Api.Services
             return await _iCuaHangRepository.GetAll();
         }
 
-        public async Task<CuaHang?> GetByProperties<T>(T val)
+        public async Task<CuaHang?> GetById(Guid id)
         {
-            return await _iCuaHangRepository.GetByProperties(val);
+            var result = _iCuaHangRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(CuaHang ch)

@@ -24,9 +24,10 @@ namespace Api.Services
             return await _iChiTietSpRepository.GetAll();
         }
 
-        public async Task<ChiTietSp?> GetByProperties<T>(T val)
+        public async Task<ChiTietSp?> GetById(Guid id)
         {
-            return await _iChiTietSpRepository.GetByProperties(val);
+            var result = _iChiTietSpRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(ChiTietSp ctsp)

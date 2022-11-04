@@ -58,10 +58,5 @@ namespace Api.Repositories
         {
             return await Entity.ToListAsync();
         }
-
-        public async Task<TEntity?> GetByProperties<T>(T property)
-        {
-            return await Entity.FindAsync(property);
-        }
     }
 }

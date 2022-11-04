@@ -35,9 +35,10 @@ namespace Api.Services
             return await _iSanPhamSpRepository.Update(sp);
         }
 
-        public async Task<SanPham?> GetByProperties<T>(T val)
+        public async Task<SanPham?> GetById(Guid id)
         {
-            return await _iSanPhamSpRepository.GetByProperties(val);
+            var result = _iSanPhamSpRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
     }
 }

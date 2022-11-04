@@ -12,6 +12,6 @@ namespace Api.IServices
 
         Task<bool> Remove(HoaDonChiTiet hdct);
 
-        Task<HoaDonChiTiet?> GetByProperties<T>(T val);
+        Task<HoaDonChiTiet?> GetById(Guid Id);
     }
 }

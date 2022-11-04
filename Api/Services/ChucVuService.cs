@@ -24,9 +24,10 @@ namespace Api.Services
             return await _iChucVuRepository.GetAll();
         }
 
-        public async Task<ChucVu?> GetByProperties<T>(T val)
+        public async Task<ChucVu?> GetById(Guid id)
         {
-            return await _iChucVuRepository.GetByProperties(val);
+            var result = _iChucVuRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
 
         public async Task<bool> Remove(ChucVu cv)

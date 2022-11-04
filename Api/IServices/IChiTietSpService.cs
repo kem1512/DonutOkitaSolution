@@ -12,6 +12,6 @@ namespace Api.IServices
 
         Task<bool> Remove(ChiTietSp ctsp);
 
-        Task<ChiTietSp?> GetByProperties<T>(T val);
+        Task<ChiTietSp?> GetById(Guid Id);
     }
 }

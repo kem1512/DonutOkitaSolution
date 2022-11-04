@@ -13,6 +13,6 @@ namespace Api.IServices
 
         Task<bool> Remove(SanPham sp);
 
-        Task<SanPham?> GetByProperties<T>(T val);
+        Task<SanPham?> GetById(Guid Id);
     }
 }

@@ -32,18 +32,10 @@ namespace Api.Controllers
             return Ok(_converToViewModel.HoaDonViewModels().Result);
         }
 
-        //[HttpGet("GetHoaDonViewModel/{name}")]
-        //public ActionResult<IEnumerable<HoaDonViewModel>> GetHoaDonViewModel(string name)
-        //{
-        //    var result = _converToViewModel.HoaDonViewModels().Where(c => c.HoaDon?.TenNguoiNhan?.ToLower()?.Contains(name.ToLower()) ?? false);
-        //    return Ok(result);
-        //}
-
-        // GET: api/hoadon/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HoaDon>> Get(Guid id)
         {
-            var result = await _iHoaDonService.GetByProperties(id);
+            var result = await _iHoaDonService.GetById(id);
 
             if (result == null)
             {
@@ -86,7 +78,7 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iHoaDonService.GetByProperties(id);
+            var result = await _iHoaDonService.GetById(id);
 
             if (result == null)
             {

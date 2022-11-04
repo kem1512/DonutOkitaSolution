@@ -24,9 +24,10 @@ namespace Api.Services
             return _iNsxRepository.GetAll();
         }
 
-        public async Task<Nsx?> GetByProperties<T>(T val)
+        public async Task<Nsx?> GetById(Guid id)
         {
-            return await _iNsxRepository.GetByProperties(val);
+            var result = _iNsxRepository.GetAll().Result.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(result);
         }
 
         public Task<bool> Remove(Nsx nsx)

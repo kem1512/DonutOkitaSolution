@@ -12,6 +12,6 @@ namespace Api.IServices
 
         Task<bool> Remove(Nsx nsx);
 
-        Task<Nsx?> GetByProperties<T>(T val);
+        Task<Nsx?> GetById(Guid Id);
     }
 }

@@ -11,7 +11,5 @@ namespace Data.IRepositories
         Task<bool> Remove(TEntity obj);
 
         Task<IEnumerable<TEntity>> GetAll();
-
-        Task<TEntity?> GetByProperties<T>(T property);
     }
 }
