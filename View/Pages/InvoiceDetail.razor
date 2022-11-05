@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="step">
-                                        <button style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(1) mb-3" data-toggle="modal" data-target="#popup"><i style="font-size: 35px" class="ni ni-check-bold"></i></button>
+                                        <button style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(1) mb-3" data-toggle="modal" data-target="@ShowPopup(1)"><i style="font-size: 35px" class="ni ni-check-bold"></i></button>
                                         <h4 class="text-muted">Đang vận chuyển</h4>
                                         @if (Status >= 2)
                                         {
@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="step">
-                                        <button style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(2) mb-3" data-toggle="modal" data-target="#popup"><i style="font-size: 35px" class="ni ni-user-run"></i></button>
+                                        <button style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(2) mb-3" data-toggle="modal" data-target="@ShowPopup(2)"><i style="font-size: 35px" class="ni ni-user-run"></i></button>
                                         <h4 class="text-muted">Đã nhận hàng</h4>
                                         @if (Status >= 2)
                                         {
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="step">
-                                        <button style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(3) mb-3" data-toggle="modal" data-target="#popup"><i style="font-size: 35px" class="ni ni-bag-17"></i></button>
+                                        <button style="border-radius: 20px;padding: 40px;" class="btn @ActiveStatus(3) mb-3" data-toggle="modal" data-target="@ShowPopup(3)"><i style="font-size: 35px" class="ni ni-bag-17"></i></button>
                                         <h4 class="text-muted">Hoàn thành</h4>
                                         @if (Status >= 3)
                                         {
@@ -87,7 +87,7 @@
                                 }
                             }
                             <div class="row justify-content-end">
-                                <button class="btn btn-primary">Xác nhận @Status</button>
+                                <button class="btn btn-primary">Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -115,6 +115,14 @@
         return "";
     }
 
+    private string ShowPopup(int val){
+        if(val > Status){
+            return "#popup";
+        }else{
+            return "";
+        }
+    }
+
     private async Task ChangeStatus(int val)
     {
         if(await Session.GetItemAsStringAsync("isLogin") != null){
@@ -123,23 +131,20 @@
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 if (HoaDonViewModels != null)
                 {
-                    if (HoaDonViewModels.First().HoaDon != null)
+                    HoaDonViewModels.First().HoaDon.TinhTrang = val;
+                    if (val == 1)
                     {
-                        HoaDonViewModels.First().HoaDon.TinhTrang = val;
-                        if (val == 1)
-                        {
-                            HoaDonViewModels.First().HoaDon.NgayShip = DateTime.Now;
-                        }
-                        else
-                        {
-                            HoaDonViewModels[0].HoaDon.NgayNhan = DateTime.Now;
-                            HoaDonViewModels[0].HoaDon.NgayThanhToan = DateTime.Now;
-                        }
-                        using (var httpResponse = await httpClient.PutAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon/" + HoaDonViewModels[0].HoaDon.Id, HoaDonViewModels[0].HoaDon))
-                        {
-                            if (httpResponse.IsSuccessStatusCode)
-                                Status = val;
-                        }
+                        HoaDonViewModels.First().HoaDon.NgayShip = DateTime.Now;
+                    }
+                    else
+                    {
+                        HoaDonViewModels[0].HoaDon.NgayNhan = DateTime.Now;
+                        HoaDonViewModels[0].HoaDon.NgayThanhToan = DateTime.Now;
+                    }
+                    using (var httpResponse = await httpClient.PutAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon/" + HoaDonViewModels[0].HoaDon.Id, HoaDonViewModels[0].HoaDon))
+                    {
+                        if (httpResponse.IsSuccessStatusCode)
+                            Status = val;
                     }
                 }
             }
