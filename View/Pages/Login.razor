@@ -79,44 +79,29 @@
 
 @code {
     private NhanVien NhanVien = new NhanVien();
-    private List<NhanVienViewModel>? NhanViens;
 
     protected async override Task OnInitializedAsync()
     {
         if (await Session.GetItemAsStringAsync("isLogin") != null) NavigationManager.NavigateTo("/");
-        using (var httpClient = new HttpClient())
-        {
-            NhanViens = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
-        }
     }
 
     private async Task SignIn(){
-        if(NhanViens != null){
-            foreach (var x in NhanViens)
+        if (NhanVien.Sdt != null && NhanVien.MatKhau != null)
+        {
+            using (var httpClient = new HttpClient())
             {
-                if (x.NhanVien?.Sdt == NhanVien.Sdt && x.NhanVien?.MatKhau == NhanVien.MatKhau)
+                var result = await httpClient.GetAsync("https://localhost:7033/api/token/" + NhanVien.Sdt + "/" + NhanVien.MatKhau);
+                if (result.IsSuccessStatusCode)
                 {
-                    if(x.NhanVien != null){
-                        using (var httpClient = new HttpClient())
-                        {
-                            using (var httpResponse = await httpClient.PostAsJsonAsync<NhanVien>("https://localhost:7033/api/nhanvien/login", x.NhanVien))
-                            {
-                                if (httpResponse.IsSuccessStatusCode)
-                                {
-                                    var result = await httpClient.PostAsJsonAsync<NhanVien>("https://localhost:7033/api/token", x.NhanVien);
-                                    await Session.SetItemAsStringAsync("jwt", result.Content.ReadAsStringAsync().Result);
-                                    NavigationManager.NavigateTo("/");
-                                }
-                            }
-                        }
-                        return;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Failed");
+                    await Session.SetItemAsStringAsync("isLogin", result.Content.ReadAsStringAsync().Result);
+                    NavigationManager.NavigateTo("/");
+                    return;
                 }
             }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
         }
     }
 }

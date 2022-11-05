@@ -2,6 +2,7 @@
 @page "/productdetail/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
 @using Data.ViewModels
+@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 
@@ -257,6 +258,7 @@
         if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
             SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
             Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
@@ -282,6 +284,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chitietsp", ChiTietSp))
                 {
                     if (response.IsSuccessStatusCode)
@@ -296,6 +299,7 @@
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/chitietsp/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -311,6 +315,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PutAsJsonAsync<ChiTietSp>("https://localhost:7033/api/chitietsp/" + ChiTietSp.Id, ChiTietSp))
                 {
                     if (response.IsSuccessStatusCode)

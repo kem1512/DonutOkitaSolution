@@ -1,6 +1,7 @@
 ﻿@page "/invoicedetail"
 @page "/invoicedetail/{InvoiceId:guid}"
 @using Data.DomainClass
+@using System.Net.Http.Headers
 @using Data.ViewModels
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
@@ -112,6 +113,7 @@
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             if(HoaDonViewModels != null){
                 if (HoaDonViewModels.First().HoaDon != null)
                 {
@@ -139,6 +141,7 @@
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             HoaDonViewModels = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
             if (HoaDonViewModels != null)

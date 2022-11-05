@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Data.ViewModels
+@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 
@@ -56,6 +57,7 @@
         if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
         }
     }

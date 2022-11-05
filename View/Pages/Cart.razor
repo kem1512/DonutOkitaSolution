@@ -1,6 +1,7 @@
 ﻿@page "/cart"
 @using Data.DomainClass
 @using Data.ViewModels
+@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 
@@ -16,22 +17,23 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if(Model != null){
-                        @foreach (var x in Model.Select((Value, Index) => new { Value, Index }))
+                    @if (Model != null)
                     {
+                        @foreach (var x in Model.Select((Value, Index) => new { Value, Index }))
+                        {
                             <div class="row mb-4">
                                 <div class="col">
-                                    <a href=""><img src="@x.Value.SanPhamViewModel?.ChiTietSp?.Anh" class="w-75"/></a>
+                                    <a href=""><img src="@x.Value.SanPhamViewModel?.ChiTietSp?.Anh" class="w-75" /></a>
                                 </div>
                                 <div class="col">
                                     <p>@x.Value.SanPhamViewModel?.SanPham?.Ten</p>
                                     <p class="text-muted">Màu sắc : @x.Value.SanPhamViewModel?.MauSac?.Ten</p>
-                                    <button class="btn btn-danger" data-toggle="modal" data-target="#popup" @onclick="() => RemoveCart(x.Value.SanPhamViewModel?.ChiTietSp?.Id)">Xóa</button>
+                                    <button class="btn btn-danger" data-toggle="modal" data-target="#popup" @onclick="() => Display(x.Value.SanPhamViewModel?.ChiTietSp?.Id)">Xóa</button>
                                 </div>
                                 <div class="col text-center">
                                     <div class="d-flex" style="height: 2.3rem">
                                         <button class="btn btn-danger mr-0" @onclick="() => Reduce(x.Index)"><i class="ni ni-fat-delete"></i></button>
-                                        <input style="height: 2.3rem" type="number" class="form-control form-control-alternative" value="@x.Value.Quantity"/>
+                                        <input style="height: 2.3rem" type="number" class="form-control form-control-alternative" value="@x.Value.Quantity" />
                                         <button class="btn btn-info" @onclick="() => Increase(x.Index)"><i class="ni ni-fat-add"></i></button>
                                     </div>
                                     <p class="mt-3 font-weight-bold">@string.Format("{0:0,0}", x.Value.SanPhamViewModel?.ChiTietSp?.GiaBan * @x.Value.Quantity) VNĐ</p>
@@ -43,52 +45,64 @@
             </div>
         </div>
         <div class="col-xl-4">
-            <div class="card bg-secondary shadow">
-                <div class="card-header bg-white border-0">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <strong class="mb-0">Hóa đơn</strong>
+            <EditForm Model="HoaDon" OnValidSubmit="AddOrder">
+                <DataAnnotationsValidator />
+                <div class="card bg-secondary shadow">
+                    <div class="card-header bg-white border-0">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <strong class="mb-0">Hóa đơn</strong>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <EditForm Model="HoaDon">
-                        <DataAnnotationsValidator />
+                    <div class="card-body">
                         <div class="d-block">
                             <div class="form-group">
-                                <label class="form-control-label" for="input-name">Tên người nhận</label>
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-control-label" for="input-name">Tên người nhận</label>
+                                    <ValidationMessage For="@(() => HoaDon.TenNguoiNhan)"></ValidationMessage>
+                                </div>
                                 <input type="text" id="input-name" @bind-value="HoaDon.TenNguoiNhan" class="form-control form-control-alternative" placeholder="Nhập tên người nhận">
                             </div>
                         </div>
                         <div class="d-block">
                             <div class="form-group">
-                                <label class="form-control-label" for="input-address">Địa chỉ</label>
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-control-label" for="input-address">Địa chỉ</label>
+                                    <ValidationMessage For="@(() => HoaDon.DiaChi)"></ValidationMessage>
+                                </div>
                                 <input type="text" id="input-address" @bind-value="HoaDon.DiaChi" class="form-control form-control-alternative" placeholder="Nhập địa chỉ">
                             </div>
                         </div>
                         <div class="d-block">
                             <div class="form-group">
-                                <label class="form-control-label" for="input-phone">Số điện thoại</label>
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-control-label" for="input-phone">Số điện thoại</label>
+                                    <ValidationMessage For="@(() => HoaDon.Sdt)"></ValidationMessage>
+                                </div>
                                 <input type="text" id="input-phone" @bind-value="HoaDon.Sdt" class="form-control form-control-alternative" placeholder="Nhập số điện thoại">
                             </div>
                         </div>
-                    </EditForm>
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <button class="btn btn-primary" @onclick="AddOrder">Xác nhận</button>
-                        <h3 class="text-muted text-right">Tổng tiền: @string.Format("{0:0,0}", @Total) VNĐ</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <button class="btn btn-primary" type="submit">Xác nhận</button>
+                            <h4 class="text-muted text-right">Tổng tiền: @string.Format("{0:0,0}", @Total) VNĐ</h4>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </EditForm>
         </div>
     </div>
+    <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => RemoveCart(Id)"></Popup>
+    <Footer></Footer>
 </div>
 
 @code {
     private List<GioHangViewModel>? Model;
     private HoaDon HoaDon = new HoaDon() { Id = Guid.NewGuid() };
     private decimal? Total = 0;
+    private Guid? Id;
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,7 +114,8 @@
         }
     }
 
-    private void ReTotal(){
+    private void ReTotal()
+    {
 
         Total = Model?.Sum(c => c.SanPhamViewModel?.ChiTietSp?.GiaBan * c.Quantity);
     }
@@ -167,32 +182,41 @@
         await Task.Run(ReTotal);
     }
 
-    private async Task AddOrder()
+    private async Task AddOrder(EditContext context)
     {
-        if (await Session.GetItemAsync<List<GioHangViewModel>>("cart") != null)
+        if (context.Validate())
         {
-            if (Model != null)
+            if (await Session.GetItemAsync<List<GioHangViewModel>>("cart") != null)
             {
-                HoaDon.NgayTao = DateTime.Now;
-                HoaDon.Ma = "123";
-                using (var httpClient = new HttpClient())
+                if (Model != null)
                 {
-                    await httpClient.PostAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon", HoaDon);
-                    foreach (var x in Model)
+                    HoaDon.NgayTao = DateTime.Now;
+                    HoaDon.Ma = "123";
+                    using (var httpClient = new HttpClient())
                     {
-                        var result = new HoaDonChiTiet()
-                            {
-                                IdHoaDon = HoaDon.Id,
-                                IdChiTietSp = x.SanPhamViewModel?.ChiTietSp?.Id ?? Guid.NewGuid(),
-                                DonGia = x.SanPhamViewModel?.ChiTietSp?.GiaBan ?? 0,
-                                SoLuong = x.Quantity
-                            };
-                        await httpClient.PostAsJsonAsync<HoaDonChiTiet>("https://localhost:7033/api/hoadonchitiet", result);
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                        await httpClient.PostAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon", HoaDon);
+                        foreach (var x in Model)
+                        {
+                            var result = new HoaDonChiTiet()
+                                {
+                                    IdHoaDon = HoaDon.Id,
+                                    IdChiTietSp = x.SanPhamViewModel?.ChiTietSp?.Id ?? Guid.NewGuid(),
+                                    DonGia = x.SanPhamViewModel?.ChiTietSp?.GiaBan ?? 0,
+                                    SoLuong = x.Quantity
+                                };
+                            await httpClient.PostAsJsonAsync<HoaDonChiTiet>("https://localhost:7033/api/hoadonchitiet", result);
+                        }
                     }
+                    await Session.RemoveItemAsync("cart");
+                    Model = null; HoaDon = new HoaDon();
                 }
-                await Session.RemoveItemAsync("cart");
-                Model = null; HoaDon = new HoaDon();
             }
         }
+    }
+
+    private void Display(Guid? id)
+    {
+        Id = id;
     }
 }

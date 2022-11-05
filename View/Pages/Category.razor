@@ -1,6 +1,7 @@
 ﻿@page "/category"
 @page "/category/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 
@@ -143,6 +144,7 @@
         if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
         }
     }
@@ -159,6 +161,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/dongsp", DongSp))
                 {
                     if (response.IsSuccessStatusCode)
@@ -173,6 +176,7 @@
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/dongsp/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -188,6 +192,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PutAsJsonAsync<DongSp>("https://localhost:7033/api/dongsp/" + DongSp.Id, DongSp))
                 {
                     if (response.IsSuccessStatusCode)

@@ -66,5 +66,14 @@ namespace Api.Services
                          select new NhanVienViewModel() { NhanVien = nv, CuaHang = ch, ChucVu = cv };
             return Task.FromResult(result);
         }
+
+        public Task<NhanVienViewModel> NhanVienViewModelById(Guid id)
+        {
+            var result = (from nv in _iNhanVienRepository.GetAll().Result
+                         join ch in _iCuaHangRepository.GetAll().Result on nv.IdCh equals ch.Id
+                         join cv in _iChucVuRepository.GetAll().Result on nv.IdCv equals cv.Id
+                         where nv.Id == id select new NhanVienViewModel() { NhanVien = nv, CuaHang = ch, ChucVu = cv }).First();
+            return Task.FromResult(result);
+        }
     }
 }

@@ -2,6 +2,7 @@
 @page "/employee/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
 @using Data.ViewModels
+@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 
@@ -274,6 +275,7 @@
         if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
             CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
@@ -293,6 +295,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/nhanvien", NhanVien))
                 {
                     if(response.IsSuccessStatusCode){
@@ -309,6 +312,7 @@
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/nhanvien/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -327,6 +331,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PutAsJsonAsync<NhanVien>("https://localhost:7033/api/nhanvien/" + NhanVien.Id, NhanVien))
                 {
                     if (response.IsSuccessStatusCode)

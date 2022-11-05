@@ -1,6 +1,7 @@
 ﻿@page "/store"
 @page "/store/page/{CurrentPageIndex:int}"
 @using Data.DomainClass
+@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 
@@ -166,6 +167,7 @@
         if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
         }
     }
@@ -187,6 +189,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/cuahang", CuaHang))
                 {
                     if (response.IsSuccessStatusCode)
@@ -201,6 +204,7 @@
     {
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/cuahang/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -216,6 +220,7 @@
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PutAsJsonAsync<CuaHang>("https://localhost:7033/api/cuahang/" + CuaHang.Id, CuaHang))
                 {
                     if (response.IsSuccessStatusCode)

@@ -1,4 +1,7 @@
-﻿<nav class="navbar navbar-vertical fixed-left navbar-expand-md navbar-light bg-white" id="sidenav-main">
+﻿@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
+
+<nav class="navbar navbar-vertical fixed-left navbar-expand-md navbar-light bg-white" id="sidenav-main">
     <div class="container-fluid">
         <!-- Toggler -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#sidenav-collapse-main" aria-controls="sidenav-main" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,13 +117,13 @@
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../examples/login.html">
-                        <i class="ni ni-key-25 text-info"></i> Login
-                    </a>
+                    <NavLink class="nav-link" href="/cart">
+                        <i class="ni ni-cart text-purple"></i> Giỏ hàng
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../examples/register.html">
-                        <i class="ni ni-circle-08 text-pink"></i> Register
+                    <a class="nav-link" href="#" @onclick="LogOut">
+                        <i class="ni ni-user-run text-primary"></i> Đăng xuất
                     </a>
                 </li>
             </ul>
@@ -149,3 +152,14 @@
         </div>
     </div>
 </nav>
+
+@code{
+    private async Task LogOut()
+    {
+        if (await Session.GetItemAsStringAsync("isLogin") != null)
+        {
+            await Session.RemoveItemAsync("isLogin");
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

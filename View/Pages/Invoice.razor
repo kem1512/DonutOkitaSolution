@@ -1,6 +1,7 @@
 ﻿@page "/invoice"
 @using Data.ViewModels
 @inject ISessionStorageService Session
+@using System.Net.Http.Headers
 @inject NavigationManager NavigationManager
 
 <div class="container-fluid mt--7">
@@ -57,7 +58,7 @@
                                             @tinhtrang
                                         </td>
                                         <td>
-                                            <a class="btn btn-primary mr-3" href="/hoadonchitiet/@x.First().HoaDon?.Id">Xem chi tiết</a>
+                                            <a class="btn btn-primary mr-3" href="/invoicedetail/@x.First().HoaDon?.Id">Xem chi tiết</a>
                                             @if (@x.First().HoaDon?.TinhTrang == 0)
                                             {
                                                 <a onclick="return confirm('Bạn có chắc muốn thanh toán?')" class="btn btn-danger" href="/hoadon/thanhtoan/@x.First().HoaDon?.Id">Xác nhận</a>
@@ -83,6 +84,7 @@
         if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
         }
     }
@@ -92,12 +94,14 @@
         if (Name.ToLower() != "")
         {
             using(var httpClient = new HttpClient()){
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel/" + Name);
             }
         }
         else
         {
             using(var httpClient = new HttpClient()){
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
             }
         }

@@ -24,10 +24,10 @@ namespace Api.Controllers
             _context = context;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post(NhanVien nhanVien)
+        [HttpGet("{phone}/{password}")]
+        public async Task<IActionResult> Post(string phone, string password)
         {
-            var user = await _context.NhanVien.FirstOrDefaultAsync(c => c.Sdt == nhanVien.Sdt && c.MatKhau == nhanVien.MatKhau);
+            var user = await _context.NhanVien.FirstOrDefaultAsync(c => c.Sdt == phone && c.MatKhau == password);
             if (user != null)
             {
                 var claims = new[]
@@ -37,8 +37,8 @@ namespace Api.Controllers
                         new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                         new Claim("Id", user.Id.ToString()),
                         new Claim("FirstName", user.Ten),
-                        new Claim("Subname", user.TenDem),
-                        new Claim("Lastname", user.Ho),
+                        new Claim("SubName", user.TenDem),
+                        new Claim("LastName", user.Ho),
                     };
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                 var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
