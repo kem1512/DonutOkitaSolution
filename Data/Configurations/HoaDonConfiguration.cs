@@ -16,14 +16,6 @@ namespace Data.Configurations
 
             builder.Property(c => c.Ma).HasColumnType("VARCHAR(20)");
 
-            builder.Property(c => c.NgayTao).HasColumnType("DATE").HasDefaultValue(DateTime.Now.ToShortDateString());
-
-            builder.Property(c => c.NgayThanhToan).HasColumnType("DATE").HasDefaultValue(null);
-
-            builder.Property(c => c.NgayShip).HasColumnType("DATE").HasDefaultValue(null);
-
-            builder.Property(c => c.NgayNhan).HasColumnType("DATE").HasDefaultValue(null);
-
             builder.Property(c => c.TinhTrang).HasDefaultValue(0);
 
             builder.Property(c => c.TenNguoiNhan).HasMaxLength(50).HasDefaultValue(null);

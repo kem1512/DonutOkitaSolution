@@ -133,6 +133,7 @@
     private int MaxRow = 5;
 
     private List<Nsx>? Nsxs;
+
     private Nsx Nsx = new Nsx();
 
     private void ChangeMaxRow(int maxRow)
@@ -163,9 +164,9 @@
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/nsx", Nsx))
+                using (var httpResponse = await httpClient.PostAsJsonAsync("https://localhost:7033/api/nsx", Nsx))
                 {
-                    if (response.IsSuccessStatusCode)
+                    if (httpResponse.IsSuccessStatusCode)
                         Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
                 }
                 Clear();
@@ -178,9 +179,9 @@
         using (var httpClient = new HttpClient())
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/nsx/" + id))
+            using (var httpResponse = await httpClient.DeleteAsync("https://localhost:7033/api/nsx/" + id))
             {
-                if (response.IsSuccessStatusCode)
+                if (httpResponse.IsSuccessStatusCode)
                     Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
             }
             Clear();
@@ -194,9 +195,9 @@
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                using (var response = await httpClient.PutAsJsonAsync<Nsx>("https://localhost:7033/api/nsx/" + Nsx.Id, Nsx))
+                using (var httpResponse = await httpClient.PutAsJsonAsync<Nsx>("https://localhost:7033/api/nsx/" + Nsx.Id, Nsx))
                 {
-                    if (response.IsSuccessStatusCode)
+                    if (httpResponse.IsSuccessStatusCode)
                         Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
                 }
                 Clear();

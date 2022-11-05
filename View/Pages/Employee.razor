@@ -257,13 +257,14 @@
     private int MaxRow = 5;
 
     private List<NhanVien>? NhanViens;
+
     private List<CuaHang>? CuaHangs;
+
     private List<ChucVu>? ChucVus;
 
     private List<NhanVienViewModel>? NhanVienViewModels;
 
     private NhanVien NhanVien = new NhanVien();
-
 
     private void ChangeMaxRow(int maxRow)
     {
@@ -276,9 +277,9 @@
         using (var httpClient = new HttpClient())
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-            NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
             CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+            NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
             NhanViens = await httpClient.GetFromJsonAsync<List<NhanVien>>("https://localhost:7033/api/nhanvien");
         }
     }
@@ -315,8 +316,7 @@
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/nhanvien/" + id))
             {
-                if (response.IsSuccessStatusCode)
-                {
+                if (response.IsSuccessStatusCode) { 
                     NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
                     NhanViens = await httpClient.GetFromJsonAsync<List<NhanVien>>("https://localhost:7033/api/nhanvien");
                 }
@@ -334,8 +334,7 @@
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 using (var response = await httpClient.PutAsJsonAsync<NhanVien>("https://localhost:7033/api/nhanvien/" + NhanVien.Id, NhanVien))
                 {
-                    if (response.IsSuccessStatusCode)
-                    {
+                    if (response.IsSuccessStatusCode) { 
                         NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
                         NhanViens = await httpClient.GetFromJsonAsync<List<NhanVien>>("https://localhost:7033/api/nhanvien");
                     }

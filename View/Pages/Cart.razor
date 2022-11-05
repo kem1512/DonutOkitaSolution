@@ -2,6 +2,7 @@
 @using Data.DomainClass
 @using Data.ViewModels
 @using System.Net.Http.Headers
+@using System.IdentityModel.Tokens.Jwt
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 
@@ -192,6 +193,16 @@
                 {
                     HoaDon.NgayTao = DateTime.Now;
                     HoaDon.Ma = "123";
+                    if (await Session.GetItemAsStringAsync("isLogin") != null)
+                    {
+                        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("isLogin"));
+                        if(jwt != null){
+                            var result = jwt.Claims.FirstOrDefault(c => c.Type.Equals("Id"));
+                            if(result != null){
+                                HoaDon.IdNv = Guid.Parse(result.Value);
+                            }
+                        }
+                    }
                     using (var httpClient = new HttpClient())
                     {
                         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));

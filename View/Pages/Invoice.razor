@@ -59,9 +59,9 @@
                                         </td>
                                         <td>
                                             <a class="btn btn-primary mr-3" href="/invoicedetail/@x.First().HoaDon?.Id">Xem chi tiết</a>
-                                            @if (@x.First().HoaDon?.TinhTrang == 0)
+                                            @if (@x.First().HoaDon?.TinhTrang != 3)
                                             {
-                                                <a onclick="return confirm('Bạn có chắc muốn thanh toán?')" class="btn btn-danger" href="/hoadon/thanhtoan/@x.First().HoaDon?.Id">Xác nhận</a>
+                                                <a onclick="return confirm('Bạn có chắc muốn thanh toán?')" class="btn btn-danger" href="/hoadon/thanhtoan/@x.First().HoaDon?.Id">Hủy</a>
                                             }
                                         </td>
                                     </tr>
