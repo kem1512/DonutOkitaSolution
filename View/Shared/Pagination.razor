@@ -59,7 +59,8 @@
     [Parameter]
     public string? Namespace { get; set; }
 
-    private int MaxRow = 5;
+    [Parameter]
+    public int MaxRow { get; set; } = 5;
 
     private int PageCount { get; set; }
 

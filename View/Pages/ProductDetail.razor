@@ -5,6 +5,7 @@
 @using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
+@layout LayoutAdmin
 
 <PageTitle>Sản phẩm</PageTitle>
 
@@ -230,7 +231,7 @@
                 <div class="card-footer py-4">
                     @if (SanPhamViewModels != null)
                     {
-                        <Pagination Model="SanPhamViewModels" CurrentPageIndex="CurrentPageIndex" Namespace="productdetail"></Pagination>
+                        <Pagination Model="SanPhamViewModels" MaxRow="MaxRow" CurrentPageIndex="CurrentPageIndex" Namespace="productdetail"></Pagination>
                     }
                 </div>
             </div>

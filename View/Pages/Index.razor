@@ -3,6 +3,7 @@
 @using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
+@layout LayoutAdmin
 
 <div class="container-fluid mt--7">
     <div class="row">
@@ -21,7 +22,7 @@
                             @if(SanPhamViewModels != null){
                                 @foreach (var x in SanPhamViewModels)
                                 {
-                                    <div class="col-lg-3 mr-auto text-left mb-4">
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mr-auto text-left mb-4">
                                         <div class="card shadow align-items-center" style="border-radius: 2.375rem;">
                                             <img src="@x.ChiTietSp?.Anh" class="card-img-top p-4">
                                             <div class="card-body pt-2 text-center">
@@ -37,7 +38,7 @@
                             }
                         </div>
                         <div class="row">
-                            <Pagination CurrentPageIndex="CurrentPageIndex" Model="SanPhamViewModels" Namespace="/"></Pagination>
+                            <Pagination CurrentPageIndex="CurrentPageIndex" MaxRow="MaxRow" Model="SanPhamViewModels" Namespace="/"></Pagination>
                         </div>
                     </div>
                 </div>

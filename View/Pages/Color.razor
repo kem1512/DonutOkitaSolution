@@ -4,6 +4,7 @@
 @using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
+@layout LayoutAdmin
 
 <PageTitle>Màu sắc</PageTitle>
 
@@ -116,7 +117,7 @@
                 <div class="card-footer py-4">
                     @if (MauSacs != null)
                     {
-                        <Pagination Model="MauSacs" CurrentPageIndex="CurrentPageIndex" Namespace="color"></Pagination>
+                        <Pagination Model="MauSacs" MaxRow="MaxRow" CurrentPageIndex="CurrentPageIndex" Namespace="color"></Pagination>
                     }
                 </div>
             </div>
