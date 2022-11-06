@@ -84,7 +84,7 @@ namespace Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6bf492cb-c656-4388-987f-1cf562186210"),
+                            Id = new Guid("145ba541-041b-43fe-be1e-4cc3833789ac"),
                             Anh = "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg",
                             GiaBan = 200000m,
                             GiaNhap = 900000m,
@@ -98,7 +98,7 @@ namespace Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("a4498b81-7fbb-47b0-a2d8-3b363fd346eb"),
+                            Id = new Guid("8673efa6-de82-4ba0-9b3a-6ee7b18b52c7"),
                             Anh = "https://cdn.tgdd.vn/Products/Images/42/230529/TimerThumb/iphone-13-pro-max-(18).jpg",
                             GiaBan = 200000m,
                             GiaNhap = 900000m,
@@ -112,7 +112,7 @@ namespace Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("6a1d6d17-5239-48fa-ba09-0e9f2d630b96"),
+                            Id = new Guid("3b3339ff-977c-43bf-89ac-1adab4249a47"),
                             Anh = "https://cdn.tgdd.vn/Products/Images/42/251703/oppo-a95-4g-bac-2-600x600.jpg",
                             GiaBan = 200000m,
                             GiaNhap = 900000m,
@@ -126,7 +126,7 @@ namespace Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("ae1421fb-d32c-43a0-b96a-0322665a7fb2"),
+                            Id = new Guid("f1bd014f-87c6-4f78-af7a-229470672145"),
                             Anh = "https://cdn.tgdd.vn/Products/Images/42/253402/realme-c21-y-blue-600x600.jpg",
                             GiaBan = 200000m,
                             GiaNhap = 900000m,
@@ -140,7 +140,7 @@ namespace Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("676aa74d-a92c-4bdd-a9f2-22bcbccd8bc1"),
+                            Id = new Guid("cd001834-cc8a-49bb-bd60-1e988b938ccb"),
                             Anh = "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg",
                             GiaBan = 200000m,
                             GiaNhap = 900000m,
@@ -154,7 +154,7 @@ namespace Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("2b19b75c-f212-4cc2-a04b-565239fded6e"),
+                            Id = new Guid("e1acf252-4aec-4e20-a1bf-1ab75a7ce9f0"),
                             Anh = "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg",
                             GiaBan = 200000m,
                             GiaNhap = 900000m,
@@ -361,22 +361,19 @@ namespace Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Ma")
-                        .IsRequired()
                         .HasColumnType("VARCHAR(20)");
 
-                    b.Property<DateTime>("NgayNhan")
-                        .HasColumnType("DATE");
+                    b.Property<DateTime?>("NgayNhan")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("NgayShip")
-                        .HasColumnType("DATE");
+                    b.Property<DateTime?>("NgayShip")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("DATE")
-                        .HasDefaultValue(new DateTime(2022, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("NgayThanhToan")
-                        .HasColumnType("DATE");
+                    b.Property<DateTime?>("NgayThanhToan")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Sdt")
                         .IsRequired()
@@ -476,7 +473,7 @@ namespace Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4ced9077-c8c1-458e-a953-5220fa16258c"),
+                            Id = new Guid("fdb189b3-75f3-4636-9845-39166bb052c2"),
                             Ma = "KH1",
                             NgaySinh = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Ten = "Ánh"
@@ -542,10 +539,12 @@ namespace Data.Migrations
                         .HasDefaultValueSql("(NEWID())");
 
                     b.Property<string>("DiaChi")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("GioiTinh")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -565,20 +564,22 @@ namespace Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Ma")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(20)");
 
                     b.Property<string>("MatKhau")
-                        .IsRequired()
                         .HasColumnType("VARCHAR(MAX)");
 
-                    b.Property<DateTime>("NgaySinh")
+                    b.Property<DateTime?>("NgaySinh")
                         .HasColumnType("DATE");
 
                     b.Property<string>("Sdt")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("VARCHAR(30)");
 
                     b.Property<string>("Ten")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
@@ -604,7 +605,7 @@ namespace Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5000ce36-ff84-48db-9767-0bd4c0168c8a"),
+                            Id = new Guid("8850d2ff-77d5-476e-9123-f1a8864babe2"),
                             DiaChi = "Hà Nội",
                             GioiTinh = "Nam",
                             Ho = "Nguyễn",
@@ -612,7 +613,7 @@ namespace Data.Migrations
                             IdCv = new Guid("b29ceea6-16a5-4171-9486-621650b569a7"),
                             Ma = "NV1",
                             MatKhau = "1234",
-                            NgaySinh = new DateTime(2022, 10, 20, 21, 21, 50, 785, DateTimeKind.Local).AddTicks(7935),
+                            NgaySinh = new DateTime(2022, 11, 6, 15, 54, 49, 711, DateTimeKind.Local).AddTicks(9266),
                             Sdt = "1234",
                             Ten = "Đăng",
                             TenDem = "Viết Hải",

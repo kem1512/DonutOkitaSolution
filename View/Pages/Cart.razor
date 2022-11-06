@@ -3,6 +3,7 @@
 @using Data.ViewModels
 @using System.Net.Http.Headers
 @using System.IdentityModel.Tokens.Jwt
+@using Newtonsoft.Json
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -192,7 +193,6 @@
                 if (Model != null)
                 {
                     HoaDon.NgayTao = DateTime.Now;
-                    HoaDon.Ma = "123";
                     if (await Session.GetItemAsStringAsync("isLogin") != null)
                     {
                         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("isLogin"));
@@ -206,17 +206,22 @@
                     using (var httpClient = new HttpClient())
                     {
                         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                        await httpClient.PostAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon", HoaDon);
-                        foreach (var x in Model)
+                        using (var httpResponse = await httpClient.PostAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon", HoaDon))
                         {
-                            var result = new HoaDonChiTiet()
+                            if(httpResponse.IsSuccessStatusCode){
+                                foreach (var x in Model)
                                 {
-                                    IdHoaDon = HoaDon.Id,
-                                    IdChiTietSp = x.SanPhamViewModel?.ChiTietSp?.Id ?? Guid.NewGuid(),
-                                    DonGia = x.SanPhamViewModel?.ChiTietSp?.GiaBan ?? 0,
-                                    SoLuong = x.Quantity
-                                };
-                            await httpClient.PostAsJsonAsync<HoaDonChiTiet>("https://localhost:7033/api/hoadonchitiet", result);
+                                    var result = new HoaDonChiTiet()
+                                        {
+                                            IdHoaDon = HoaDon.Id,
+                                            IdChiTietSp = x.SanPhamViewModel?.ChiTietSp?.Id ?? Guid.NewGuid(),
+                                            DonGia = x.SanPhamViewModel?.ChiTietSp?.GiaBan ?? 0,
+                                            SoLuong = x.Quantity
+                                        };
+                                    await httpClient.PostAsJsonAsync<HoaDonChiTiet>("https://localhost:7033/api/hoadonchitiet", result);
+                                }
+                            }
+
                         }
                     }
                     await Session.RemoveItemAsync("cart");

@@ -116,15 +116,15 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(NEWID())"),
-                    Ma = table.Column<string>(type: "VARCHAR(20)", nullable: true),
-                    Ten = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    Ma = table.Column<string>(type: "VARCHAR(20)", nullable: false),
+                    Ten = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     TenDem = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     Ho = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    GioiTinh = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    NgaySinh = table.Column<DateTime>(type: "DATE", nullable: false),
-                    DiaChi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Sdt = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: true),
-                    MatKhau = table.Column<string>(type: "VARCHAR(MAX)", nullable: false),
+                    GioiTinh = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    NgaySinh = table.Column<DateTime>(type: "DATE", nullable: true),
+                    DiaChi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Sdt = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
+                    MatKhau = table.Column<string>(type: "VARCHAR(MAX)", nullable: true),
                     IdCh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdCv = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdGuiBc = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -232,11 +232,11 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(NEWID())"),
-                    Ma = table.Column<string>(type: "VARCHAR(20)", nullable: false),
-                    NgayTao = table.Column<DateTime>(type: "DATE", nullable: false, defaultValue: new DateTime(2022, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)),
-                    NgayThanhToan = table.Column<DateTime>(type: "DATE", nullable: false),
-                    NgayShip = table.Column<DateTime>(type: "DATE", nullable: false),
-                    NgayNhan = table.Column<DateTime>(type: "DATE", nullable: false),
+                    Ma = table.Column<string>(type: "VARCHAR(20)", nullable: true),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NgayThanhToan = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    NgayShip = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    NgayNhan = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TinhTrang = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     TenNguoiNhan = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DiaChi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -330,7 +330,7 @@ namespace Data.Migrations
             migrationBuilder.InsertData(
                 table: "KhachHang",
                 columns: new[] { "Id", "DiaChi", "Ho", "Ma", "MatKhau", "NgaySinh", "QuocGia", "Sdt", "Ten", "TenDem", "ThanhPho" },
-                values: new object[] { new Guid("4ced9077-c8c1-458e-a953-5220fa16258c"), null, null, "KH1", null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "Ánh", null, null });
+                values: new object[] { new Guid("fdb189b3-75f3-4636-9845-39166bb052c2"), null, null, "KH1", null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "Ánh", null, null });
 
             migrationBuilder.InsertData(
                 table: "MauSac",
@@ -359,18 +359,18 @@ namespace Data.Migrations
                 columns: new[] { "Id", "Anh", "GiaBan", "GiaNhap", "IdDongSp", "IdMauSac", "IdNsx", "IdSp", "MoTa", "NamBh", "SoLuongTon" },
                 values: new object[,]
                 {
-                    { new Guid("2b19b75c-f212-4cc2-a04b-565239fded6e"), "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a6"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
-                    { new Guid("676aa74d-a92c-4bdd-a9f2-22bcbccd8bc1"), "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a5"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
-                    { new Guid("6a1d6d17-5239-48fa-ba09-0e9f2d630b96"), "https://cdn.tgdd.vn/Products/Images/42/251703/oppo-a95-4g-bac-2-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a9"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
-                    { new Guid("6bf492cb-c656-4388-987f-1cf562186210"), "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a2"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
-                    { new Guid("a4498b81-7fbb-47b0-a2d8-3b363fd346eb"), "https://cdn.tgdd.vn/Products/Images/42/230529/TimerThumb/iphone-13-pro-max-(18).jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a8"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
-                    { new Guid("ae1421fb-d32c-43a0-b96a-0322665a7fb2"), "https://cdn.tgdd.vn/Products/Images/42/253402/realme-c21-y-blue-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a9"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 }
+                    { new Guid("145ba541-041b-43fe-be1e-4cc3833789ac"), "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a2"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
+                    { new Guid("3b3339ff-977c-43bf-89ac-1adab4249a47"), "https://cdn.tgdd.vn/Products/Images/42/251703/oppo-a95-4g-bac-2-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a9"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
+                    { new Guid("8673efa6-de82-4ba0-9b3a-6ee7b18b52c7"), "https://cdn.tgdd.vn/Products/Images/42/230529/TimerThumb/iphone-13-pro-max-(18).jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a8"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
+                    { new Guid("cd001834-cc8a-49bb-bd60-1e988b938ccb"), "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a5"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
+                    { new Guid("e1acf252-4aec-4e20-a1bf-1ab75a7ce9f0"), "https://cdn.tgdd.vn/Products/Images/42/247364/samsung-galaxy-m53-nau-thumb-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a6"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 },
+                    { new Guid("f1bd014f-87c6-4f78-af7a-229470672145"), "https://cdn.tgdd.vn/Products/Images/42/253402/realme-c21-y-blue-600x600.jpg", 200000m, 900000m, new Guid("b29ceea6-16a5-4171-9486-621650b569a1"), new Guid("b29ceea6-16a5-4171-9486-621650b569a9"), new Guid("b29ceea6-16a5-4171-9486-621650b569a3"), new Guid("b29ceea6-16a5-4171-9486-621650b569a4"), "", 2002, 50 }
                 });
 
             migrationBuilder.InsertData(
                 table: "NhanVien",
                 columns: new[] { "Id", "DiaChi", "GioiTinh", "Ho", "IdCh", "IdCv", "IdGuiBc", "Ma", "MatKhau", "NgaySinh", "Sdt", "Ten", "TenDem" },
-                values: new object[] { new Guid("5000ce36-ff84-48db-9767-0bd4c0168c8a"), "Hà Nội", "Nam", "Nguyễn", new Guid("b29ceea6-16a5-4171-9486-621650b569a8"), new Guid("b29ceea6-16a5-4171-9486-621650b569a7"), null, "NV1", "1234", new DateTime(2022, 10, 20, 21, 21, 50, 785, DateTimeKind.Local).AddTicks(7935), "1234", "Đăng", "Viết Hải" });
+                values: new object[] { new Guid("8850d2ff-77d5-476e-9123-f1a8864babe2"), "Hà Nội", "Nam", "Nguyễn", new Guid("b29ceea6-16a5-4171-9486-621650b569a8"), new Guid("b29ceea6-16a5-4171-9486-621650b569a7"), null, "NV1", "1234", new DateTime(2022, 11, 6, 15, 54, 49, 711, DateTimeKind.Local).AddTicks(9266), "1234", "Đăng", "Viết Hải" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChiTietSp_IdDongSp",

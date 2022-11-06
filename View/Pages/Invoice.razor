@@ -1,4 +1,5 @@
 ﻿@page "/invoice"
+@using Data.DomainClass
 @using Data.ViewModels
 @inject ISessionStorageService Session
 @using System.Net.Http.Headers
@@ -17,13 +18,17 @@
                         <div class="col-lg-6 text-right">
                             <div class="dropdown mb-0">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Tất cả
+                                    @TinhTrang
                                 </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <button class="dropdown-item">Chưa hoàn thành</button>
-                                    <button class="dropdown-item">Đang giao</button>
-                                    <button class="dropdown-item">Đã hoàn thành</button>
-                                    <button class="dropdown-item">Đã hủy</button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                    @if (TinhTrang != "Tất cả")
+                                    {
+                                        <button class="dropdown-item" @onclick="() => ChangeStatus(999)">Tất cả</button>
+                                    }
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus(0)">Chưa hoàn thành</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus(1)">Đang giao</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus(3)">Đã hoàn thành</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus(4)">Đã hủy</button>
                                 </div>
                             </div>
                         </div>
@@ -48,22 +53,42 @@
                                 @foreach (var x in Model.GroupBy(c => c.HoaDon?.Id))
                                 {
                                     <tr>
-                                        <td>@(index += 1)</td>
+                                        <td>
+                                            @(
+                                                index += 1
+                                                )
+                                        </td>
                                         <td>@x.First().HoaDon?.TenNguoiNhan</td>
                                         <td>@x.First().HoaDon?.DiaChi</td>
-                                        <td>@(string.Format("{0:0,0}", x.Sum(c => c.HoaDonChiTiet?.DonGia * c.HoaDonChiTiet?.SoLuong))) VNĐ</td>
+                                        <td>
+                                            @(
+                                                string.Format("{0:0,0}", x.Sum(c => c.HoaDonChiTiet?.DonGia * c.HoaDonChiTiet?.SoLuong))
+                                                ) VNĐ
+                                        </td>
                                         <td>
                                             @{
-                                                var tinhtrang = x.First()?.HoaDon?.TinhTrang == 0 ? "Chưa hoành thành" : "Hoàn thành";
+                                                var tinhTrang = "";
+                                                switch (x.First()?.HoaDon?.TinhTrang)
+                                                {
+                                                    case 0:
+                                                    case 2:
+                                                        tinhTrang = "Chưa hoàn thành";
+                                                        break;
+                                                    case 1:
+                                                        tinhTrang = "Đang giao";
+                                                        break;
+                                                    case 3:
+                                                        tinhTrang = "Đã hoàn thành";
+                                                        break;
+                                                    case 4:
+                                                        tinhTrang = "Đã hủy";
+                                                        break;
+                                                }
                                             }
-                                            @tinhtrang
+                                            @tinhTrang
                                         </td>
                                         <td>
                                             <a class="btn btn-primary mr-3" href="/invoicedetail/@x.First().HoaDon?.Id">Xem chi tiết</a>
-                                            @if (@x.First().HoaDon?.TinhTrang != 3)
-                                            {
-                                                <a onclick="return confirm('Bạn có chắc muốn thanh toán?')" class="btn btn-danger" href="/hoadon/thanhtoan/@x.First().HoaDon?.Id">Hủy</a>
-                                            }
                                         </td>
                                     </tr>
                                 }
@@ -78,7 +103,9 @@
 
 @code {
     private List<HoaDonViewModel>? Model;
+    private List<HoaDonViewModel>? ModelOld;
     private string Name = "";
+    private string TinhTrang = "Tất cả";
 
     protected async override Task OnInitializedAsync()
     {
@@ -87,6 +114,7 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
+            ModelOld = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
         }
     }
 
@@ -94,17 +122,72 @@
     {
         if (Name.ToLower() != "")
         {
-            using(var httpClient = new HttpClient()){
+            using (var httpClient = new HttpClient())
+            {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel/" + Name);
             }
         }
         else
         {
-            using(var httpClient = new HttpClient()){
+            using (var httpClient = new HttpClient())
+            {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
             }
+        }
+    }
+
+    private async Task Cancel(Guid? id)
+    {
+        var result = Model?.FirstOrDefault(c => c.HoaDon?.Id == id);
+        if (result != null && result.HoaDon != null)
+        {
+            result.HoaDon.TinhTrang = 4;
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                using (var httpResponse = await httpClient.PutAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon/" + id, result.HoaDon))
+                {
+                    if (httpResponse.IsSuccessStatusCode)
+                    {
+                        Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
+                        ModelOld = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
+                    }
+                    else
+                    {
+                        Console.WriteLine("132");
+                    }
+                }
+            }
+        }
+    }
+
+    private void ChangeStatus(int status)
+    {
+        switch (status)
+        {
+            case 0:
+            case 2:
+                TinhTrang = "Chưa hoàn thành";
+                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 0 || c.HoaDon?.TinhTrang == 2).ToList();
+                break;
+            case 1:
+                TinhTrang = "Đang giao";
+                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 1).ToList();
+                break;
+            case 3:
+                TinhTrang = "Đã hoàn thành";
+                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 3).ToList();
+                break;
+            case 4:
+                TinhTrang = "Đã hủy";
+                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 4).ToList();
+                break;
+            default:
+                TinhTrang = "Tất cả";
+                Model = ModelOld;
+                break;
         }
     }
 }

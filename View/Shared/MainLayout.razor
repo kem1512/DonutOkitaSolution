@@ -12,8 +12,6 @@ else
 }
 
 @code {
-    private string? name;
-
     protected async override Task OnInitializedAsync()
     {
         if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");

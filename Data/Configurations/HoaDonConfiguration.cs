@@ -20,6 +20,8 @@ namespace Data.Configurations
 
             builder.Property(c => c.TenNguoiNhan).HasMaxLength(50).HasDefaultValue(null);
 
+            builder.Property(c => c.NgayShip).HasDefaultValue(null);
+
             builder.Property(c => c.DiaChi).HasMaxLength(100).HasDefaultValue(null);
 
             builder.Property(c => c.Sdt).HasColumnType("VARCHAR").HasMaxLength(30).HasDefaultValue(null);
