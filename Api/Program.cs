@@ -43,9 +43,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 var app = builder.Build();
 
-app.UseCors(MyAllowSpecificOrigins);
-
 // Configure the HTTP request pipeline.
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
 

@@ -1,27 +1,26 @@
 ﻿@page "/cart"
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
+@layout LayoutAdmin
 @using Data.DomainClass
 @using Data.ViewModels
 @using System.Net.Http.Headers
 @using System.IdentityModel.Tokens.Jwt
 @using Newtonsoft.Json
-@inject ISessionStorageService Session
-@inject NavigationManager NavigationManager
-@layout LayoutAdmin
 
 <div class="container-fluid mt--7">
     <div class="row">
-        <div class="col-xl-8">
-            <div class="card bg-secondary shadow">
-                <div class="card-header bg-white border-0">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <strong class="mb-0">Giỏ hàng</strong>
+        @if(Model != null){
+            <div class="col-xl-8">
+                <div class="card bg-secondary shadow">
+                    <div class="card-header bg-white border-0">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <strong class="mb-0">Giỏ hàng</strong>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    @if (Model != null)
-                    {
+                    <div class="card-body">
                         @foreach (var x in Model.Select((Value, Index) => new { Value, Index }))
                         {
                             <div class="row mb-4">
@@ -43,67 +42,76 @@
                                 </div>
                             </div>
                         }
-                    }
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-4">
-            <EditForm Model="HoaDon" OnValidSubmit="AddOrder">
-                <DataAnnotationsValidator />
-                <div class="card bg-secondary shadow">
-                    <div class="card-header bg-white border-0">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <strong class="mb-0">Hóa đơn</strong>
+            <div class="col-xl-4">
+                <EditForm Model="HoaDon" OnValidSubmit="AddOrder">
+                    <DataAnnotationsValidator />
+                    <div class="card bg-secondary shadow">
+                        <div class="card-header bg-white border-0">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <strong class="mb-0">Hóa đơn</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-block">
+                                <div class="form-group">
+                                    <div class="d-flex justify-content-between">
+                                        <label class="form-control-label" for="input-name">Tên người nhận</label>
+                                        <ValidationMessage For="@(() => HoaDon.TenNguoiNhan)"></ValidationMessage>
+                                    </div>
+                                    <input type="text" id="input-name" @bind-value="HoaDon.TenNguoiNhan" class="form-control form-control-alternative" placeholder="Nhập tên người nhận">
+                                </div>
+                            </div>
+                            <div class="d-block">
+                                <div class="form-group">
+                                    <div class="d-flex justify-content-between">
+                                        <label class="form-control-label" for="input-address">Địa chỉ</label>
+                                        <ValidationMessage For="@(() => HoaDon.DiaChi)"></ValidationMessage>
+                                    </div>
+                                    <input type="text" id="input-address" @bind-value="HoaDon.DiaChi" class="form-control form-control-alternative" placeholder="Nhập địa chỉ">
+                                </div>
+                            </div>
+                            <div class="d-block">
+                                <div class="form-group">
+                                    <div class="d-flex justify-content-between">
+                                        <label class="form-control-label" for="input-phone">Số điện thoại</label>
+                                        <ValidationMessage For="@(() => HoaDon.Sdt)"></ValidationMessage>
+                                    </div>
+                                    <input type="text" id="input-phone" @bind-value="HoaDon.Sdt" class="form-control form-control-alternative" placeholder="Nhập số điện thoại">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <button class="btn btn-primary" type="submit">Xác nhận</button>
+                                <h4 class="text-muted text-right">Tổng tiền: @string.Format("{0:0,0}", @Total) VNĐ</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="d-block">
-                            <div class="form-group">
-                                <div class="d-flex justify-content-between">
-                                    <label class="form-control-label" for="input-name">Tên người nhận</label>
-                                    <ValidationMessage For="@(() => HoaDon.TenNguoiNhan)"></ValidationMessage>
-                                </div>
-                                <input type="text" id="input-name" @bind-value="HoaDon.TenNguoiNhan" class="form-control form-control-alternative" placeholder="Nhập tên người nhận">
-                            </div>
-                        </div>
-                        <div class="d-block">
-                            <div class="form-group">
-                                <div class="d-flex justify-content-between">
-                                    <label class="form-control-label" for="input-address">Địa chỉ</label>
-                                    <ValidationMessage For="@(() => HoaDon.DiaChi)"></ValidationMessage>
-                                </div>
-                                <input type="text" id="input-address" @bind-value="HoaDon.DiaChi" class="form-control form-control-alternative" placeholder="Nhập địa chỉ">
-                            </div>
-                        </div>
-                        <div class="d-block">
-                            <div class="form-group">
-                                <div class="d-flex justify-content-between">
-                                    <label class="form-control-label" for="input-phone">Số điện thoại</label>
-                                    <ValidationMessage For="@(() => HoaDon.Sdt)"></ValidationMessage>
-                                </div>
-                                <input type="text" id="input-phone" @bind-value="HoaDon.Sdt" class="form-control form-control-alternative" placeholder="Nhập số điện thoại">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <button class="btn btn-primary" type="submit">Xác nhận</button>
-                            <h4 class="text-muted text-right">Tổng tiền: @string.Format("{0:0,0}", @Total) VNĐ</h4>
-                        </div>
-                    </div>
+                </EditForm>
+            </div>
+        }else{
+            <div class="col-xl-12 order-xl-1">
+                <div class="card bg-secondary shadow font-weight-bold" style="height: 200px;display: flex;justify-content: center;align-items: center;">
+                    <h3><strong>Không có sản phẩm</strong></h3>
                 </div>
-            </EditForm>
-        </div>
+            </div>
+        }
     </div>
     <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => RemoveCart(Id)"></Popup>
 </div>
 
 @code {
     private List<GioHangViewModel>? Model;
+
     private HoaDon HoaDon = new HoaDon() { Id = Guid.NewGuid() };
+
     private decimal? Total = 0;
+
     private Guid? Id;
 
     protected override async Task OnInitializedAsync()

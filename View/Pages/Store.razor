@@ -1,10 +1,10 @@
 ﻿@page "/store"
 @page "/store/page/{CurrentPageIndex:int}"
-@using Data.DomainClass
-@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
+@using Data.DomainClass
+@using System.Net.Http.Headers
 
 <PageTitle>Cửa hàng</PageTitle>
 
@@ -151,7 +151,6 @@
         </div>
     </div>
     <Popup Message="Bạn có chắc muốn xóa?" PopupType="Popup.PopupTypes.Confirm" Method="() => Delete(CuaHang?.Id)"></Popup>
-    <Footer></Footer>
 </div>
 
 @code {
@@ -161,7 +160,16 @@
     private int MaxRow = 5;
 
     private List<CuaHang>? CuaHangs;
+
     private CuaHang CuaHang = new CuaHang();
+
+    private int RowName = 5;
+
+    private void ChangeMaxRow(int maxRow)
+    {
+        MaxRow = maxRow;
+        RowName = maxRow;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -177,11 +185,6 @@
     {
         CurrentPageIndex = 1;
         return base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void ChangeMaxRow(int maxRow)
-    {
-        MaxRow = maxRow;
     }
 
     private async Task Create(EditContext context)

@@ -27,25 +27,32 @@ namespace Api.Controllers
         [HttpGet("{phone}/{password}")]
         public async Task<IActionResult> Post(string phone, string password)
         {
-            var user = await _context.NhanVien.FirstOrDefaultAsync(c => c.Sdt == phone && c.MatKhau == password);
-            if (user != null)
+            if(_context.NhanVien != null)
             {
-                var claims = new[]
-                    {
+                var nhanVien = await _context.NhanVien.FirstOrDefaultAsync(c => c.Sdt == phone && c.MatKhau == password);
+                if (nhanVien != null)
+                {
+                    var claims = new[]
+                        {
                         new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
                         new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim("Id", user.Id.ToString()),
-                        new Claim("FirstName", user.Ten),
-                        new Claim("SubName", user.TenDem),
-                        new Claim("LastName", user.Ho),
+                        new Claim("Id", nhanVien.Id.ToString()),
+                        new Claim("FirstName", nhanVien.Ten ?? ""),
+                        new Claim("SubName", nhanVien.TenDem ?? ""),
+                        new Claim("LastName", nhanVien.Ho ?? ""),
                     };
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
-                    _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddDays(1),
-                    signingCredentials: signIn);
-                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                    var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                    var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+                        _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddDays(1),
+                        signingCredentials: signIn);
+                    return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             else
             {

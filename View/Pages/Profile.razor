@@ -1,10 +1,10 @@
 ﻿@page "/profile"
-@using Data.ViewModels
-@using System.IdentityModel.Tokens.Jwt
-@using System.Net.Http.Headers
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
+@using Data.ViewModels
+@using System.IdentityModel.Tokens.Jwt
+@using System.Net.Http.Headers
 
 @if (Model != null)
 {
@@ -58,7 +58,9 @@
                                 </div>
                                 <div class="text-center">
                                     <h3>
-                                        @Model.NhanVien.Ho @Model.NhanVien.TenDem @Model.NhanVien.Ten <span class="font-weight-light"> @(DateTime.Now.Year - Model.NhanVien.NgaySinh.Value.Year) tuổi</span>
+                                        @if (Model.NhanVien.NgaySinh != null){
+                                            @Model.NhanVien.Ho @Model.NhanVien.TenDem @Model.NhanVien.Ten <span class="font-weight-light"> @(DateTime.Now.Year - Model.NhanVien.NgaySinh.Value.Year) tuổi</span>
+                                        }
                                     </h3>
                                     <p>
                                         Địa chỉ : @Model.NhanVien.DiaChi
@@ -86,7 +88,7 @@
                             <div class="card-body">
                                 @if (Model.NhanVien != null && Model.ChucVu != null && Model.CuaHang != null)
                                 {
-                                    <EditForm Model="Model">
+                                    <EditForm Model="Model" OnValidSubmit="Update">
                                         <div class="pl-lg-4">
                                             <div class="row">
                                                 <div class="col-lg-4">
@@ -118,22 +120,31 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
                                                     <div class="form-group">
                                                         <div class="d-flex justify-content-between">
                                                             <label class="form-control-label" for="input-phone">Số điện thoại</label>
                                                             <ValidationMessage For="@(() => Model.NhanVien.Sdt)"></ValidationMessage>
                                                         </div>
-                                                        <input type="email" id="input-phone" class="form-control form-control-alternative" @bind-value="Model.NhanVien.Sdt">
+                                                        <input id="input-phone" class="form-control form-control-alternative" @bind-value="Model.NhanVien.Sdt">
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
                                                     <div class="form-group">
                                                         <div class="d-flex justify-content-between">
                                                             <label class="form-control-label" for="input-address">Địa chỉ</label>
                                                             <ValidationMessage For="@(() => Model.NhanVien.DiaChi)"></ValidationMessage>
                                                         </div>
-                                                        <input type="email" id="input-address" class="form-control form-control-alternative" @bind-value="Model.NhanVien.DiaChi">
+                                                        <input id="input-address" class="form-control form-control-alternative" @bind-value="Model.NhanVien.DiaChi">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="form-group">
+                                                        <div class="d-flex justify-content-between">
+                                                            <label class="form-control-label" for="input-address">Ngày sinh</label>
+                                                            <ValidationMessage For="@(() => Model.NhanVien.NgaySinh)"></ValidationMessage>
+                                                        </div>
+                                                        <InputDate id="input-address" class="form-control form-control-alternative" @bind-Value="Model.NhanVien.NgaySinh"></InputDate>
                                                     </div>
                                                 </div>
                                             </div>
@@ -148,7 +159,6 @@
                     </div>
                 }  
             </div>
-            <Footer></Footer>
         </div>
     }
 }
@@ -183,6 +193,23 @@
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
                 Model = await httpClient.GetFromJsonAsync<NhanVienViewModel>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel/" + id.Value);
+            }
+        }
+    }
+
+    private async Task Update(EditContext context)
+    {
+        if (context.Validate())
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                using (var response = await httpClient.PutAsJsonAsync("https://localhost:7033/api/nhanvien/" + Model?.NhanVien?.Id, Model?.NhanVien))
+                {
+                    if (response.IsSuccessStatusCode)
+                        Model = await httpClient.GetFromJsonAsync<NhanVienViewModel>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel/" + Model?.NhanVien?.Id);
+                }
+                Model = new NhanVienViewModel(); Status = false;
             }
         }
     }

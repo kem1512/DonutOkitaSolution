@@ -1,11 +1,11 @@
 ﻿@page "/invoicedetail"
 @page "/invoicedetail/{InvoiceId:guid}"
-@using Data.DomainClass
-@using System.Net.Http.Headers
-@using Data.ViewModels
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
+@using Data.DomainClass
+@using System.Net.Http.Headers
+@using Data.ViewModels
 
 @if (HoaDonViewModels != null)
 {
@@ -111,7 +111,6 @@
         </div>
         @if (HoaDonViewModels?.FirstOrDefault()?.HoaDon?.NgayNhan == null){
             <Popup Message="Bạn có chắc muốn thay đổi trạng thái?" PopupType="Popup.PopupTypes.Confirm" Method="() => ChangeStatus(Status ?? 0)"></Popup>
-
         }
     </div>
 }
