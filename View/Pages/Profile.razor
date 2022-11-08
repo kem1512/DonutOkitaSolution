@@ -28,7 +28,7 @@
         <div class="container-fluid mt--7">
             <div class="row justify-content-center">
                 @if(!Status){
-                    <div class="col-xl-4 order-xl-2 mb-5 mb-xl-0">
+                    <div class="col-xl-6 order-xl-2 mb-5 mb-xl-0">
                         <div class="card card-profile shadow">
                             <div class="row justify-content-center">
                                 <div class="col-lg-3 order-lg-2">
@@ -57,16 +57,18 @@
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <h3>
-                                        @if (Model.NhanVien.NgaySinh != null){
-                                            @Model.NhanVien.Ho @Model.NhanVien.TenDem @Model.NhanVien.Ten <span class="font-weight-light"> @(DateTime.Now.Year - Model.NhanVien.NgaySinh.Value.Year) tuổi</span>
-                                        }
-                                    </h3>
+                                    @{
+                                        var name = @Model.NhanVien.Ho + " " + @Model.NhanVien.TenDem + " " + @Model.NhanVien.Ten;
+                                        <h3>@name</h3>
+                                    }
+                                    @if(@Model.NhanVien.NgaySinh != null){
+                                        <p><strong>Ngày sinh : @Model.NhanVien.NgaySinh.Value.ToShortDateString()</strong></p>
+                                    }
                                     <p>
-                                        Địa chỉ : @Model.NhanVien.DiaChi
+                                        <strong>Địa chỉ : @Model.NhanVien.DiaChi</strong>
                                     </p>
                                     <p>
-                                        Số điện thoại : @Model.NhanVien.Sdt
+                                        <strong>Số điện thoại : @Model.NhanVien.Sdt</strong>
                                     </p>
                                     <strong>
                                         Chức vụ : @Model.ChucVu.Ten - <span class="text-danger">Cửa hàng : @Model.CuaHang.Ten</span>
@@ -209,7 +211,7 @@
                     if (response.IsSuccessStatusCode)
                         Model = await httpClient.GetFromJsonAsync<NhanVienViewModel>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel/" + Model?.NhanVien?.Id);
                 }
-                Model = new NhanVienViewModel(); Status = false;
+                Status = false;
             }
         }
     }
