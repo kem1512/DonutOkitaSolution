@@ -74,7 +74,7 @@
                         <div class="col-lg-6 text-right">
                             <div class="dropdown mb-0">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Hiển thị @RowName kết quả
+                                    Hiển thị @MaxRow kết quả
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
@@ -98,7 +98,8 @@
                         <tbody>
                             @if (Nsxs != null)
                             {
-                                foreach (var x in NameSearch != null ? Nsxs.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Nsxs.Select((Value, Index) => new { Value, Index }))
+                                var Model = Nsxs.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -139,8 +140,6 @@
 
     private Nsx Nsx = new Nsx();
 
-    private int RowName = 5;
-
     private void ChangeMaxRow(int MaxRow)
     {
         this.MaxRow = MaxRow;
@@ -153,10 +152,6 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
-            if (Nsxs != null)
-            {
-                Nsxs = Nsxs.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-            }
         }
     }
 

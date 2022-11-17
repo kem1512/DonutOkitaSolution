@@ -98,7 +98,8 @@
                         <tbody>
                             @if (DongSps != null)
                             {
-                                foreach (var x in NameSearch != null ? DongSps.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : DongSps.Select((Value, Index) => new { Value, Index }))
+                                var Model = DongSps.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -150,9 +151,6 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
-            if(DongSps != null){
-                DongSps = DongSps.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-            }
         }
     }
 

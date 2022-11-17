@@ -98,7 +98,8 @@
                         <tbody>
                             @if (MauSacs != null)
                             {
-                                foreach (var x in NameSearch != null ? MauSacs.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : MauSacs.Select((Value, Index) => new { Value, Index }))
+                                var Model = MauSacs.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -151,10 +152,6 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
-            if (MauSacs != null)
-            {
-                MauSacs = MauSacs.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-            }
         }
     }
 

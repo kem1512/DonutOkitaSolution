@@ -1,4 +1,6 @@
 ﻿@page "/invoice"
+@page "/invoice/page/{CurrentPageIndex:int}"
+@page "/invoice/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -32,6 +34,17 @@
                                     <button class="dropdown-item" @onclick="() => ChangeStatus((int)StatusOrder.DaHuy)">Đã hủy</button>
                                 </div>
                             </div>
+
+                            <div class="dropdown mb-0">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hiển thị @MaxRow kết quả
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(10)">10</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeMaxRow(15)">15</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -50,8 +63,9 @@
                         <tbody>
                             @if (Model != null)
                             {
+                                var ModelNew = Model.GroupBy(c => c.HoaDon?.Id).Select(c => new HoaDonViewModel() { HoaDon = c.FirstOrDefault()?.HoaDon, HoaDonChiTiet = c.FirstOrDefault()?.HoaDonChiTiet }).ToList().Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
                                 var index = 0;
-                                @foreach (var x in Model.GroupBy(c => c.HoaDon?.Id))
+                                @foreach (var x in NameSearch != null ? ModelNew.GroupBy(c => c.HoaDon.Id).Where(c => c.FirstOrDefault().HoaDon.TenNguoiNhan.ToLower().Trim().Contains(NameSearch)) : ModelNew.GroupBy(c => c.HoaDon.Id))
                                 {
                                     <tr>
                                         <td>
@@ -97,17 +111,29 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="card-footer py-4">
+                    @if (Model != null)
+                    {
+                        <Pagination Model="Model" MaxRow="MaxRow" CurrentPageIndex="CurrentPageIndex" Namespace="invoice"></Pagination>
+                    }
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 @code {
+    [Parameter]
+    public int CurrentPageIndex { get; set; }
+
+    [Parameter]
+    public string? NameSearch { get; set; }
+
+    private int MaxRow = 5;
+
     private List<HoaDonViewModel>? Model;
 
     private List<HoaDonViewModel>? ModelOld;
-
-    private string Name = "";
 
     private string TinhTrang = "Tất cả";
 
@@ -122,24 +148,15 @@
         }
     }
 
-    private async Task Search()
+    protected override Task OnParametersSetAsync()
     {
-        if (Name.ToLower() != "")
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel/" + Name);
-            }
-        }
-        else
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
-            }
-        }
+        if (CurrentPageIndex == 0) CurrentPageIndex = 1;
+        return base.OnParametersSetAsync();
+    }
+
+    private void ChangeMaxRow(int MaxRow)
+    {
+        this.MaxRow = MaxRow;
     }
 
     private async Task Cancel(Guid? id)

@@ -219,7 +219,8 @@
                         <tbody>
                             @if (NhanVienViewModels != null)
                             {
-                                foreach (var x in NameSearch != null ? NhanVienViewModels.Where(c => c?.NhanVien.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : NhanVienViewModels)
+                                var Model = NhanVienViewModels = NhanVienViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+                                foreach (var x in NameSearch != null ? Model.Where(c => c?.NhanVien.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model)
                                 {
                                     <tr>
                                         <td>@x.NhanVien?.Ma</td>
@@ -284,10 +285,6 @@
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
             NhanViens = await httpClient.GetFromJsonAsync<List<NhanVien>>("https://localhost:7033/api/nhanvien");
             NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
-            if (NhanVienViewModels != null)
-            {
-                NhanVienViewModels = NhanVienViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-            }
         }
     }
 
