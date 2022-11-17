@@ -1,5 +1,6 @@
 ﻿@page "/category"
 @page "/category/page/{CurrentPageIndex:int}"
+@page "/category/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -30,7 +31,7 @@
                                             <label class="form-control-label" for="input-id">Mã dòng sản phẩm</label>
                                             <ValidationMessage For="@(() => DongSp.Ma)"></ValidationMessage>
                                         </div>
-                                        <input type="text" id="input-id" @bind-value="DongSp.Ma" class="form-control form-control-alternative" placeholder="Nhập mã dòng sản phẩm">
+                                        <input type="text" id="input-id" @bind="DongSp.Ma" class="form-control form-control-alternative" placeholder="Nhập mã dòng sản phẩm">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -39,7 +40,7 @@
                                             <label class="form-control-label" for="input-name">Tên dòng sản phẩm</label>
                                             <ValidationMessage For="@(() => DongSp.Ten)"></ValidationMessage>
                                         </div>
-                                        <input type="text" id="input-name" @bind-value="DongSp.Ten" class="form-control form-control-alternative" placeholder="Nhập tên dòng sản phẩm">
+                                        <input type="text" id="input-name" @bind="DongSp.Ten" class="form-control form-control-alternative" placeholder="Nhập tên dòng sản phẩm">
                                     </div>
                                 </div>
                             </div>
@@ -127,6 +128,9 @@
 @code {
     [Parameter]
     public int CurrentPageIndex { get; set; }
+
+    [Parameter]
+    public string? NameSearch { get; set; }
 
     private int MaxRow = 5;
 

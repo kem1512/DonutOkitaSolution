@@ -12,16 +12,16 @@
             <!-- Brand -->
             <NavLink class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" href="/">Trang chủ</NavLink>
             <!-- Form -->
-            <form class="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+            <div class="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
                 <div class="form-group mb-0">
                     <div class="input-group input-group-alternative">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                         </div>
-                        <input class="form-control" placeholder="Search" type="text" @bind="NameSearch">
+                        <input class="form-control" placeholder="Search" type="text" @bind-value="NameSearch" @onkeyup="Search" @onkeyup:preventDefault="true">
                     </div>
                 </div>
-            </form>
+            </div>
             <!-- User -->
             <ul class="navbar-nav align-items-center d-none d-md-flex">
                 <li class="nav-item dropdown">
@@ -56,7 +56,7 @@
                             <span>Support</span>
                         </NavLink>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item">
+                        <button class="dropdown-item" @onclick="LogOut">
                             <i class="ni ni-user-run"></i>
                             <span>Logout</span>
                         </button>
@@ -70,7 +70,11 @@
         <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
         </div>
     }
-    @Body
+
+    @if (!NavigationManager.Uri.Contains("login"))
+    {
+        @Body
+    }
 </div>
 
 @code {
@@ -91,6 +95,59 @@
         }
     }
 
+    private void Redirected(string uri){
+        if (!string.IsNullOrEmpty(NameSearch))
+        {
+            NavigationManager.NavigateTo($"/{uri}/{NameSearch?.ToUpper().Trim()}");
+        }
+        else
+        {
+            if (NavigationManager.Uri.Contains("name")){
+                NavigationManager.NavigateTo("/");
+            }else{
+                NavigationManager.NavigateTo($"/{uri}");
+            }
+        }
+    }
+
+    private void Search(KeyboardEventArgs args){
+        if(args.Key == "Enter"){
+            switch (NavigationManager.Uri)
+            {
+                case string c when c.Contains("category"):
+                    Redirected("category");
+                    break;
+                case string c when c.Contains("color"):
+                    Redirected("color");
+                    break;
+                case string c when c.Contains("employee"):
+                    Redirected("employee");
+                    break;
+                case string c when c.Contains("invoice"):
+                    Redirected("invoice");
+                    break;
+                case string c when c.Contains("producer"):
+                    Redirected("producer");
+                    break;
+                case string c when c.Contains("product"):
+                    Redirected("product");
+                    break;
+                case string c when c.Contains("productdetail"):
+                    Redirected("productdetail");
+                    break;
+                case string c when c.Contains("rule"):
+                    Redirected("rule");
+                    break;
+                case string c when c.Contains("store"):
+                    Redirected("store");
+                    break;
+                default:
+                    Redirected("name");
+                    break;
+            }
+        }
+    }
+
     protected async override Task OnParametersSetAsync()
     {
         if (await Session.GetItemAsStringAsync("isLogin") != null)
@@ -103,15 +160,6 @@
                 Name = firstName.Value + " " + lastName.Value;
             }
         }
-    }
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (NameSearch != null)
-        {
-            NavigationManager.NavigateTo($"/{NameSearch?.ToUpper().Trim()}");
-        }
-        return base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task LogOut()

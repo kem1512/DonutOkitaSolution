@@ -5,6 +5,7 @@
 @using Data.DomainClass
 @using Data.ViewModels
 @using System.Net.Http.Headers
+@using View.Extensions.Enums
 
 <div class="container-fluid mt--7">
     <div class="row">
@@ -25,10 +26,10 @@
                                     {
                                         <button class="dropdown-item" @onclick="() => ChangeStatus(999)">Tất cả</button>
                                     }
-                                    <button class="dropdown-item" @onclick="() => ChangeStatus(0)">Chưa hoàn thành</button>
-                                    <button class="dropdown-item" @onclick="() => ChangeStatus(1)">Đang giao</button>
-                                    <button class="dropdown-item" @onclick="() => ChangeStatus(3)">Đã hoàn thành</button>
-                                    <button class="dropdown-item" @onclick="() => ChangeStatus(4)">Đã hủy</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus((int)StatusOrder.ChuaHoanThanh)">Chưa hoàn thành</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus((int)StatusOrder.DangGiao)">Đang giao</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus((int)StatusOrder.DaHoanThanh)">Đã hoàn thành</button>
+                                    <button class="dropdown-item" @onclick="() => ChangeStatus((int)StatusOrder.DaHuy)">Đã hủy</button>
                                 </div>
                             </div>
                         </div>
@@ -173,19 +174,19 @@
             case 0:
             case 2:
                 TinhTrang = "Chưa hoàn thành";
-                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 0 || c.HoaDon?.TinhTrang == 2).ToList();
+                Model = ModelOld?.Where(c => c.HoaDon?.TinhTrang == 0 || c.HoaDon?.TinhTrang == 2).ToList();
                 break;
             case 1:
                 TinhTrang = "Đang giao";
-                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 1).ToList();
+                Model = ModelOld?.Where(c => c.HoaDon?.TinhTrang == 1).ToList();
                 break;
             case 3:
                 TinhTrang = "Đã hoàn thành";
-                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 3).ToList();
+                Model = ModelOld?.Where(c => c.HoaDon?.TinhTrang == 3).ToList();
                 break;
             case 4:
                 TinhTrang = "Đã hủy";
-                Model = Model?.Where(c => c.HoaDon?.TinhTrang == 4).ToList();
+                Model = ModelOld?.Where(c => c.HoaDon?.TinhTrang == 4).ToList();
                 break;
             default:
                 TinhTrang = "Tất cả";

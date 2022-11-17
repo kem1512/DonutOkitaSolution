@@ -32,6 +32,7 @@ namespace Api.Services
             _iCuaHangRepository = new DonutOkitaRepository<CuaHang>(context);
             _iNhanVienRepository = new DonutOkitaRepository<NhanVien>(context);
         }
+
         public Task<IEnumerable<SanPhamViewModel>> SanPhamViewModels()
         {
             var result = from ctsp in _iChiTietSpRepository.GetAll().Result

@@ -1,6 +1,7 @@
 ﻿@page "/login"
 @inject ISessionStorageService Session;
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRunTime
 @using Data.DomainClass
 @using Data.ViewModels
 
@@ -41,7 +42,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                                     </div>
-                                    <input class="form-control" placeholder="Nhập số điện thoại" type="text" @bind="NhanVien.Sdt">
+                                    <input class="form-control" placeholder="Nhập số điện thoại" type="text" @bind="NhanVien.Sdt" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -49,7 +50,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                                     </div>
-                                    <input class="form-control" placeholder="Nhập mật khẩu" type="password" @bind="NhanVien.MatKhau">
+                                    <input class="form-control" placeholder="Nhập mật khẩu" type="password" @bind="NhanVien.MatKhau" required>
                                 </div>
                             </div>
                             <div class="custom-control custom-control-alternative custom-checkbox">
@@ -86,7 +87,7 @@
     }
 
     private async Task SignIn(){
-        if (NhanVien.Sdt != null && NhanVien.MatKhau != null)
+        if (!string.IsNullOrEmpty(NhanVien.Sdt) && !string.IsNullOrEmpty(NhanVien.MatKhau))
         {
             using (var httpClient = new HttpClient())
             {
@@ -96,12 +97,15 @@
                     await Session.SetItemAsStringAsync("isLogin", result.Content.ReadAsStringAsync().Result);
                     NavigationManager.NavigateTo("/");
                     return;
+                }else{
+                    await JSRunTime.InvokeVoidAsync("alertMessage", "Đăng nhập thất bại", "error");
+                    Console.Clear();
                 }
             }
         }
         else
         {
-            Console.WriteLine("Failed");
+            await JSRunTime.InvokeVoidAsync("alertMessage", "Đăng nhập thất bại", "error");
         }
     }
 }

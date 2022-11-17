@@ -88,7 +88,7 @@
                                                     <p class="text-muted">Màu sắc : @y.MauSac?.Ten</p>
                                                 </div>
                                                 <div class="col">
-                                                    <p><strong>@string.Format("{0:0,0}", y.ChiTietSp?.GiaBan) VNĐ</strong></p>
+                                                    <p><strong>@string.Format("{0:0,0}", y.ChiTietSp?.GiaBan) VNĐ x @x.HoaDonChiTiet?.SoLuong</strong></p>
                                                 </div>
                                                 <div class="col">
                                                     <p>@x.HoaDon?.NgayTao</p>
@@ -168,6 +168,9 @@
                     {
                         if (httpResponse.IsSuccessStatusCode){
                             HoaDonViewModels = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
+                            if(HoaDonViewModels != null){
+                                HoaDonViewModels = HoaDonViewModels.Where(c => c.HoaDon?.Id == InvoiceId).ToList();
+                            }
                         }
                     }
                 }

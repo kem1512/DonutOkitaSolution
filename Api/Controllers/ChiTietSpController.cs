@@ -40,6 +40,11 @@ namespace Api.Controllers
             return Ok(result);
         }
 
+        protected static void Position()
+        {
+
+        }
+
         // PUT: api/chitietsp/5
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, ChiTietSp ctsp)

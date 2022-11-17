@@ -229,7 +229,7 @@
                                         };
                                     await httpClient.PostAsJsonAsync<HoaDonChiTiet>("https://localhost:7033/api/hoadonchitiet", result);
                                 }
-                                await JSRunTime.InvokeVoidAsync("alertMessage", "Tạo đơn thành công");
+                                await JSRunTime.InvokeVoidAsync("alertMessage", "Tạo đơn thành công", "success");
                             }
 
                         }

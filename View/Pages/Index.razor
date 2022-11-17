@@ -7,10 +7,10 @@
 @using Data.ViewModels
 @using System.Net.Http.Headers
 
-<div class="container-fluid mt--7">
+<div class="container-fluid my--7">
     <div class="row">
         <div class="col-xl-12 order-xl-1">
-            <div class="card bg-secondary shadow">
+            <div class="card bg-secondary shadow mb-4">
                 <div class="card-header bg-white border-0">
                     <div class="row align-items-center">
                         <div class="col">
@@ -21,27 +21,12 @@
                 <div class="card-body mt-2">
                     <div class="px-lg-4">
                         <div class="row">
-                            @if(SanPhamViewModels != null){
-                                if(NameSearch != null){
-                                    @foreach (var x in SanPhamViewModels.Where(c => c.SanPham?.Ten?.Contains(NameSearch) ?? false))
+                            @{
+                                if (SanPhamViewModels != null)
+                                {
+                                    foreach (var x in NameSearch != null ? SanPhamViewModels.Where(c => c.SanPham?.Ten?.Contains(NameSearch) ?? false) : SanPhamViewModels)
                                     {
-                                        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mr-auto text-left mb-4">
-                                            <div class="card shadow align-items-center" style="border-radius: 2.375rem;">
-                                                <img src="@x.ChiTietSp?.Anh" class="card-img-top p-4">
-                                                <div class="card-body pt-2 text-center">
-                                                    <a href=""><h4 class="card-subtitle mb-2 text-muted text-uppercase">@x.SanPham?.Ten <br> ( Màu @x.MauSac?.Ten )</h4></a>
-                                                    <h3 class="card-text d-flex justify-content-between">
-                                                        @string.Format("{0:0,0}", x.ChiTietSp?.GiaBan) VNĐ
-                                                        <a href="" @onclick="() => AddCart(x.ChiTietSp?.Id)" style="font-size: 20px"><i class="ni ni-fat-add"></i></a>
-                                                    </h3>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                }else{
-                                    @foreach (var x in SanPhamViewModels)
-                                    {
-                                        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mr-auto text-left mb-4">
+                                        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-4">
                                             <div class="card shadow align-items-center" style="border-radius: 2.375rem;">
                                                 <img src="@x.ChiTietSp?.Anh" class="card-img-top p-4">
                                                 <div class="card-body pt-2 text-center">
@@ -124,7 +109,7 @@
                 cart.Add(new GioHangViewModel { SanPhamViewModel = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id), Quantity = 1 });
             }
             await Session.SetItemAsync<List<GioHangViewModel>>("cart", cart);
-            await JSRunTime.InvokeVoidAsync("alertMessage", "Thêm thành công");
+            await JSRunTime.InvokeVoidAsync("alertMessage", "Thêm thành công", "success");
         }
     }
 }
