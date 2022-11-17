@@ -114,32 +114,32 @@
         if(args.Key == "Enter"){
             switch (NavigationManager.Uri)
             {
-                case string c when c.Contains("category"):
-                    Redirected("category");
+                case string c when c.Contains("category") || c.Contains("category/name"):
+                    Redirected("category/name");
                     break;
                 case string c when c.Contains("color"):
-                    Redirected("color");
+                    Redirected("color/name");
                     break;
                 case string c when c.Contains("employee"):
-                    Redirected("employee");
+                    Redirected("employee/name");
                     break;
                 case string c when c.Contains("invoice"):
-                    Redirected("invoice");
+                    Redirected("invoice/name");
                     break;
                 case string c when c.Contains("producer"):
-                    Redirected("producer");
+                    Redirected("producer/name");
                     break;
                 case string c when c.Contains("product"):
-                    Redirected("product");
+                    Redirected("product/name");
                     break;
                 case string c when c.Contains("productdetail"):
-                    Redirected("productdetail");
+                    Redirected("productdetail/name");
                     break;
-                case string c when c.Contains("rule"):
-                    Redirected("rule");
+                case string c when c.Contains("role"):
+                    Redirected("role/name");
                     break;
                 case string c when c.Contains("store"):
-                    Redirected("store");
+                    Redirected("store/name");
                     break;
                 default:
                     Redirected("name");

@@ -1,5 +1,6 @@
 ﻿@page "/productdetail"
 @page "/productdetail/page/{CurrentPageIndex:int}"
+@page "/productdetail/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -207,7 +208,7 @@
                         <tbody>
                             @if (SanPhamViewModels != null)
                             {
-                                @foreach (var x in SanPhamViewModels.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                foreach (var x in NameSearch != null ? SanPhamViewModels.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.SanPham.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : SanPhamViewModels.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -241,7 +242,10 @@
 
 @code {
     [Parameter]
-    public int CurrentPageIndex { get; set; } = 1;
+    public int CurrentPageIndex { get; set; }
+
+    [Parameter]
+    public string? NameSearch { get; set; }
 
     private int MaxRow = 5;
 
@@ -259,10 +263,9 @@
 
     private int RowName = 5;
 
-    private void ChangeMaxRow(int maxRow)
+    private void ChangeMaxRow(int MaxRow)
     {
-        MaxRow = maxRow;
-        RowName = maxRow;
+        this.MaxRow = MaxRow;
     }
 
     protected override async Task OnInitializedAsync()
@@ -271,11 +274,15 @@
         using (var httpClient = new HttpClient())
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-            SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
             SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
             Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
             DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
             MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
+            SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+            if (SanPhamViewModels != null)
+            {
+                SanPhamViewModels = SanPhamViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+            }
         }
     }
 

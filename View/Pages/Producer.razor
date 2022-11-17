@@ -1,5 +1,6 @@
 ﻿@page "/producer"
 @page "/producer/page/{CurrentPageIndex:int}"
+@page "/producer/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -97,7 +98,7 @@
                         <tbody>
                             @if (Nsxs != null)
                             {
-                                @foreach (var x in Nsxs.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                foreach (var x in NameSearch != null ? Nsxs.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Nsxs.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -129,6 +130,9 @@
     [Parameter]
     public int CurrentPageIndex { get; set; }
 
+    [Parameter]
+    public string? NameSearch { get; set; }
+
     private int MaxRow = 5;
 
     private List<Nsx>? Nsxs;
@@ -137,10 +141,9 @@
 
     private int RowName = 5;
 
-    private void ChangeMaxRow(int maxRow)
+    private void ChangeMaxRow(int MaxRow)
     {
-        MaxRow = maxRow;
-        RowName = maxRow;
+        this.MaxRow = MaxRow;
     }
 
     protected override async Task OnInitializedAsync()
@@ -150,6 +153,10 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
+            if (Nsxs != null)
+            {
+                Nsxs = Nsxs.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+            }
         }
     }
 
@@ -159,9 +166,9 @@
         return base.OnParametersSetAsync();
     }
 
-    private async Task Create(EditContext context)
+    private async Task Create(EditContext Context)
     {
-        if (context.Validate())
+        if (Context.Validate())
         {
             using (var httpClient = new HttpClient())
             {
@@ -190,9 +197,9 @@
         }
     }
 
-    private async Task Update(EditContext context)
+    private async Task Update(EditContext Context)
     {
-        if (context.Validate())
+        if (Context.Validate())
         {
             using (var httpClient = new HttpClient())
             {

@@ -1,5 +1,6 @@
 ﻿@page "/employee"
 @page "/employee/page/{CurrentPageIndex:int}"
+@page "/employee/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -191,7 +192,7 @@
                         <div class="col-lg-6 text-right">
                             <div class="dropdown mb-0">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Hiển thị @RowName kết quả
+                                    Hiển thị @MaxRow kết quả
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
@@ -218,7 +219,7 @@
                         <tbody>
                             @if (NhanVienViewModels != null)
                             {
-                                @foreach (var x in NhanVienViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                foreach (var x in NameSearch != null ? NhanVienViewModels.Where(c => c?.NhanVien.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : NhanVienViewModels)
                                 {
                                     <tr>
                                         <td>@x.NhanVien?.Ma</td>
@@ -253,6 +254,9 @@
     [Parameter]
     public int CurrentPageIndex { get; set; }
 
+    [Parameter]
+    public string? NameSearch { get; set; }
+
     private int MaxRow = 5;
 
     private List<NhanVien>? NhanViens;
@@ -265,12 +269,9 @@
 
     private NhanVien NhanVien = new NhanVien();
 
-    private int RowName = 5;
-
     private void ChangeMaxRow(int maxRow)
     {
         MaxRow = maxRow;
-        RowName = maxRow;
     }
 
     protected override async Task OnInitializedAsync()
@@ -281,8 +282,12 @@
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
-            NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
             NhanViens = await httpClient.GetFromJsonAsync<List<NhanVien>>("https://localhost:7033/api/nhanvien");
+            NhanVienViewModels = await httpClient.GetFromJsonAsync<List<NhanVienViewModel>>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel");
+            if (NhanVienViewModels != null)
+            {
+                NhanVienViewModels = NhanVienViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+            }
         }
     }
 

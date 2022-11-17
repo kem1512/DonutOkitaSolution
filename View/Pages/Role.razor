@@ -1,5 +1,6 @@
-﻿@page "/rule"
-@page "/rule/page/{CurrentPageIndex:int}"
+﻿@page "/role"
+@page "/role/page/{CurrentPageIndex:int}"
+@page "/role/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -97,7 +98,7 @@
                         <tbody>
                             @if (ChucVus != null)
                             {
-                                @foreach (var x in ChucVus.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                foreach (var x in NameSearch != null ? ChucVus.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : ChucVus.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -129,6 +130,9 @@
     [Parameter]
     public int CurrentPageIndex { get; set; }
 
+    [Parameter]
+    public string? NameSearch { get; set; }
+
     private int MaxRow = 5;
 
     private List<ChucVu>? ChucVus;
@@ -137,10 +141,9 @@
 
     private int RowName = 5;
 
-    private void ChangeMaxRow(int maxRow)
+    private void ChangeMaxRow(int MaxRow)
     {
-        MaxRow = maxRow;
-        RowName = maxRow;
+        this.MaxRow = MaxRow;
     }
 
     protected override async Task OnInitializedAsync()
@@ -150,12 +153,16 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
+            if (ChucVus != null)
+            {
+                ChucVus = ChucVus.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+            }
         }
     }
 
-    private async Task Create(EditContext context)
+    private async Task Create(EditContext Context)
     {
-        if (context.Validate())
+        if (Context.Validate())
         {
             using (var httpClient = new HttpClient())
             {
@@ -184,9 +191,9 @@
         }
     }
 
-    private async Task Update(EditContext context)
+    private async Task Update(EditContext Context)
     {
-        if (context.Validate())
+        if (Context.Validate())
         {
             using (var httpClient = new HttpClient())
             {

@@ -1,6 +1,6 @@
 ﻿@page "/category"
 @page "/category/page/{CurrentPageIndex:int}"
-@page "/category/{NameSearch}"
+@page "/category/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -31,7 +31,7 @@
                                             <label class="form-control-label" for="input-id">Mã dòng sản phẩm</label>
                                             <ValidationMessage For="@(() => DongSp.Ma)"></ValidationMessage>
                                         </div>
-                                        <input type="text" id="input-id" @bind="DongSp.Ma" class="form-control form-control-alternative" placeholder="Nhập mã dòng sản phẩm">
+                                        <input type="text" id="input-id" @bind-value="DongSp.Ma" class="form-control form-control-alternative" placeholder="Nhập mã dòng sản phẩm">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -40,7 +40,7 @@
                                             <label class="form-control-label" for="input-name">Tên dòng sản phẩm</label>
                                             <ValidationMessage For="@(() => DongSp.Ten)"></ValidationMessage>
                                         </div>
-                                        <input type="text" id="input-name" @bind="DongSp.Ten" class="form-control form-control-alternative" placeholder="Nhập tên dòng sản phẩm">
+                                        <input type="text" id="input-name" @bind-value="DongSp.Ten" class="form-control form-control-alternative" placeholder="Nhập tên dòng sản phẩm">
                                     </div>
                                 </div>
                             </div>
@@ -74,7 +74,7 @@
                         <div class="col-lg-6 text-right">
                             <div class="dropdown mb-0">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Hiển thị @RowName kết quả
+                                    Hiển thị @MaxRow kết quả
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <button class="dropdown-item" @onclick="() => ChangeMaxRow(5)">5</button>
@@ -98,32 +98,17 @@
                         <tbody>
                             @if (DongSps != null)
                             {
-                                if(NameSearch != null){
-                                    foreach (var x in NameSearch != null ? DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch) ?? false) : DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
-                                    {
-                                        <tr>
-                                            <td>@(x.Index + 1)</td>
-                                            <td>@x.Value.Ma</td>
-                                            <td>@x.Value.Ten</td>
-                                            <td>
-                                                <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
-                                                <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
-                                            </td>
-                                        </tr>
-                                    }
-                                }else{
-                                    @foreach (var x in DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
-                                    {
-                                        <tr>
-                                            <td>@(x.Index + 1)</td>
-                                            <td>@x.Value.Ma</td>
-                                            <td>@x.Value.Ten</td>
-                                            <td>
-                                                <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
-                                                <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
-                                            </td>
-                                        </tr>
-                                    }
+                                foreach (var x in NameSearch != null ? DongSps.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : DongSps.Select((Value, Index) => new { Value, Index }))
+                                {
+                                    <tr>
+                                        <td>@(x.Index + 1)</td>
+                                        <td>@x.Value.Ma</td>
+                                        <td>@x.Value.Ten</td>
+                                        <td>
+                                            <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
+                                            <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
+                                        </td>
+                                    </tr>
                                 }
                             }
                         </tbody>
@@ -153,12 +138,9 @@
 
     private DongSp DongSp = new DongSp();
 
-    private int RowName = 5;
-
-    private void ChangeMaxRow(int maxRow)
+    private void ChangeMaxRow(int MaxRow)
     {
-        MaxRow = maxRow;
-        RowName = maxRow;
+        this.MaxRow = MaxRow;
     }
 
     protected override async Task OnInitializedAsync()
@@ -168,6 +150,9 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
+            if(DongSps != null){
+                DongSps = DongSps.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+            }
         }
     }
 
@@ -208,9 +193,9 @@
         }
     }
 
-    private async Task Update(EditContext context)
+    private async Task Update(EditContext Context)
     {
-        if (context.Validate())
+        if (Context.Validate())
         {
             using (var httpClient = new HttpClient())
             {

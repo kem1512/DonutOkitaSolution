@@ -21,19 +21,19 @@
                 <div class="card-body mt-2">
                     <div class="px-lg-4">
                         <div class="row">
-                            @{
-                                if (SanPhamViewModels != null)
+                            @if (SanPhamViewModels != null)
+                            {
+                                foreach (var x in NameSearch != null ? SanPhamViewModels.Where(c => c.SanPham?.Ten?.ToLower().Trim().Contains(NameSearch) ?? false) : SanPhamViewModels)
                                 {
-                                    foreach (var x in NameSearch != null ? SanPhamViewModels.Where(c => c.SanPham?.Ten?.ToLower().Trim().Contains(NameSearch) ?? false) : SanPhamViewModels)
+                                    if (x.SanPham?.Id == x.ChiTietSp?.IdSp)
                                     {
                                         <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 mb-4">
                                             <div class="card shadow align-items-center" style="border-radius: 2.375rem;">
                                                 <img src="@x.ChiTietSp?.Anh" class="card-img-top p-4">
                                                 <div class="card-body pt-2 text-center">
-                                                    <a href=""><h4 class="card-subtitle mb-2 text-muted text-uppercase">@x.SanPham?.Ten <br> ( Màu @x.MauSac?.Ten )</h4></a>
+                                                    <a href=""><h4 class="card-subtitle mb-2 text-muted text-uppercase">@x.SanPham?.Ten</h4></a>
                                                     <h3 class="card-text d-flex justify-content-between">
-                                                        @string.Format("{0:0,0}", x.ChiTietSp?.GiaBan) VNĐ
-                                                        <a href="" @onclick="() => AddCart(x.ChiTietSp?.Id)" style="font-size: 20px"><i class="ni ni-fat-add"></i></a>
+                                                        Từ @string.Format("{0:0,0}", x.ChiTietSp?.GiaBan) VNĐ
                                                     </h3>
                                                 </div>
                                             </div>
@@ -68,6 +68,13 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+            if (SanPhamViewModels != null)
+            {
+                SanPhamViewModels = SanPhamViewModels.GroupBy(a => a.SanPham?.Ten)
+                .SelectMany(b => b.OrderBy(c => c.ChiTietSp?.GiaBan)
+                .Select((Value, Index) => new { Value, Index = Index + 1 }))
+                .Where(c => c.Index == 1).Select(c => c.Value).ToList();
+            }
         }
     }
 
