@@ -98,7 +98,7 @@
     private void Redirected(string uri){
         if (!string.IsNullOrEmpty(NameSearch))
         {
-            NavigationManager.NavigateTo($"/{uri}/{NameSearch?.ToUpper().Trim()}");
+            NavigationManager.NavigateTo($"/{uri}/{NameSearch?.ToLower().Trim()}");
         }
         else
         {

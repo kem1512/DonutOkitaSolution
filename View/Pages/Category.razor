@@ -1,6 +1,6 @@
 ﻿@page "/category"
 @page "/category/page/{CurrentPageIndex:int}"
-@page "/category/name/{NameSearch}"
+@page "/category/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
@@ -98,17 +98,32 @@
                         <tbody>
                             @if (DongSps != null)
                             {
-                                @foreach (var x in DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
-                                {
-                                    <tr>
-                                        <td>@(x.Index + 1)</td>
-                                        <td>@x.Value.Ma</td>
-                                        <td>@x.Value.Ten</td>
-                                        <td>
-                                            <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
-                                            <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
-                                        </td>
-                                    </tr>
+                                if(NameSearch != null){
+                                    foreach (var x in NameSearch != null ? DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch) ?? false) : DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                    {
+                                        <tr>
+                                            <td>@(x.Index + 1)</td>
+                                            <td>@x.Value.Ma</td>
+                                            <td>@x.Value.Ten</td>
+                                            <td>
+                                                <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
+                                                <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }else{
+                                    @foreach (var x in DongSps.Select((Value, Index) => new { Value, Index }).Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow))
+                                    {
+                                        <tr>
+                                            <td>@(x.Index + 1)</td>
+                                            <td>@x.Value.Ma</td>
+                                            <td>@x.Value.Ten</td>
+                                            <td>
+                                                <button class="btn btn-warning" @onclick="() => Display(x.Value.Id)">Sửa</button>
+                                                <button class="btn btn-danger" @onclick="() => Display(x.Value.Id)" data-toggle="modal" data-target="#popup">Xóa</button>
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                             }
                         </tbody>
