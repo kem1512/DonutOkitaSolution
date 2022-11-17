@@ -6,11 +6,11 @@ namespace Api.IServices
     {
         Task<IEnumerable<DongSp>> GetAll();
 
-        Task<bool> Add(DongSp dsp);
+        Task<string?> Add(DongSp dsp);
 
-        Task<bool> Update(DongSp dsp);
+        Task<string?> Update(DongSp dsp);
 
-        Task<bool> Remove(DongSp dsp);
+        Task<string?> Remove(DongSp dsp);
 
         Task<DongSp?> GetById(Guid Id);
     }

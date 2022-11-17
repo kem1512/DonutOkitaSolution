@@ -6,14 +6,12 @@ namespace Api.IServices
     {
         Task<IEnumerable<NhanVien>> GetAll();
 
-        Task<bool> Add(NhanVien nv);
+        Task<string?> Add(NhanVien nv);
 
-        Task<bool> Update(NhanVien nv);
+        Task<string?> Update(NhanVien nv);
 
-        Task<bool> Remove(NhanVien nv);
+        Task<string?> Remove(NhanVien nv);
 
         Task<NhanVien?> GetById(Guid Id);
-
-        Task<NhanVien?> IsLogin(string phone, string password);
     }
 }

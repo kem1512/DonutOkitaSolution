@@ -14,7 +14,7 @@ namespace Api.Services
             _iNhanVienRepository = new DonutOkitaRepository<NhanVien>(context);
         }
 
-        public async Task<bool> Add(NhanVien nv)
+        public async Task<string?> Add(NhanVien nv)
         {
             return await _iNhanVienRepository.Add(nv);
         }
@@ -36,12 +36,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool> Remove(NhanVien nv)
+        public async Task<string?> Remove(NhanVien nv)
         {
             return await _iNhanVienRepository.Remove(nv);
         }
 
-        public async Task<bool> Update(NhanVien nv)
+        public async Task<string?> Update(NhanVien nv)
         {
             return await _iNhanVienRepository.Update(nv);
         }

@@ -49,43 +49,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iHoaDonChiTietService.Update(sp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iHoaDonChiTietService.Update(sp);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/hoadonchitiet
         [HttpPost]
         public async Task<ActionResult<HoaDonChiTiet>> Post(HoaDonChiTiet sp)
         {
-            if (!await _iHoaDonChiTietService.Add(sp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iHoaDonChiTietService.Add(sp);
 
-            return CreatedAtAction("Get", new { id = sp.IdHoaDon }, sp);
+            return result != null ? CreatedAtAction("Get", new { id = sp.IdHoaDon }, sp) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/hoadonchitiet/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iHoaDonChiTietService.GetById(id);
+            var hdct = await _iHoaDonChiTietService.GetById(id);
 
-            if (result == null)
+            if (hdct == null)
             {
                 return NotFound();
             }
 
-            if (!await _iHoaDonChiTietService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iHoaDonChiTietService.Add(hdct);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

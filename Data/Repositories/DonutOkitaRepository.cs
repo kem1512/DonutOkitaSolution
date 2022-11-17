@@ -14,43 +14,43 @@ namespace Api.Repositories
             Context = context; Entity = context.Set<TEntity>();
         }
 
-        public async Task<bool> Add(TEntity entity)
+        public async Task<string?> Add(TEntity entity)
         {
             try
             {
                 await Entity.AddAsync(entity); 
                 await Context.SaveChangesAsync();
-                return true;
+                return null;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                return e.Message;
             }
         }
 
-        public async Task<bool> Update(TEntity entity)
+        public async Task<string?> Update(TEntity entity)
         {
             try
             {
                 Context.Entry(entity).State = EntityState.Modified; Entity.Update(entity); await Context.SaveChangesAsync();
-                return true;
+                return null;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                return e.Message;
             }
         }
 
-        public async Task<bool> Remove(TEntity entity)
+        public async Task<string?> Remove(TEntity entity)
         {
             try
             {
                 Entity.Remove(entity); await Context.SaveChangesAsync();
-                return true;
+                return null;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                return e.Message;
             }
         }
 

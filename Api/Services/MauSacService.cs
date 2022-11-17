@@ -14,7 +14,7 @@ namespace Api.Services
             _iMauSacRepository = new DonutOkitaRepository<MauSac>(context);
         }
 
-        public async Task<bool> Add(MauSac ms)
+        public async Task<string?> Add(MauSac ms)
         {
             return await _iMauSacRepository.Add(ms);
         }
@@ -30,12 +30,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool> Remove(MauSac ms)
+        public async Task<string?> Remove(MauSac ms)
         {
             return await _iMauSacRepository.Remove(ms);
         }
 
-        public async Task<bool> Update(MauSac ms)
+        public async Task<string?> Update(MauSac ms)
         {
             return await _iMauSacRepository.Update(ms);
         }

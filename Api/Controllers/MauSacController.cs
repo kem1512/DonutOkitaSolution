@@ -49,43 +49,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iMauSacService.Update(ms))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iMauSacService.Update(ms);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/mausac
         [HttpPost]
         public async Task<ActionResult<MauSac>> Post(MauSac ms)
         {
-            if (!await _iMauSacService.Add(ms))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iMauSacService.Add(ms);
 
-            return CreatedAtAction("Get", new { id = ms.Id }, ms);
+            return result != null ? CreatedAtAction("Get", new { id = ms.Id }, ms) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/mausac/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iMauSacService.GetById(id);
+            var ms = await _iMauSacService.GetById(id);
 
-            if (result == null)
+            if (ms == null)
             {
                 return NotFound();
             }
 
-            if (!await _iMauSacService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iMauSacService.Remove(ms);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

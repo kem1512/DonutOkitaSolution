@@ -14,7 +14,7 @@ namespace Api.Services
             _iNsxRepository = new DonutOkitaRepository<Nsx>(context);
         }
 
-        public async Task<bool> Add(Nsx nsx)
+        public async Task<string?> Add(Nsx nsx)
         {
             return await _iNsxRepository.Add(nsx);
         }
@@ -30,12 +30,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public Task<bool> Remove(Nsx nsx)
+        public Task<string?> Remove(Nsx nsx)
         {
             return _iNsxRepository.Remove(nsx);
         }
 
-        public Task<bool> Update(Nsx nsx)
+        public Task<string?> Update(Nsx nsx)
         {
             return _iNsxRepository.Update(nsx);
         }

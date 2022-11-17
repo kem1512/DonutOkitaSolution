@@ -14,7 +14,7 @@ namespace Api.Services
             _iChiTietSpRepository = new DonutOkitaRepository<ChiTietSp>(context);
         }
 
-        public async Task<bool> Add(ChiTietSp ctsp)
+        public async Task<string?> Add(ChiTietSp ctsp)
         {
             return await _iChiTietSpRepository.Add(ctsp);
         }
@@ -30,12 +30,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool> Remove(ChiTietSp ctsp)
+        public async Task<string?> Remove(ChiTietSp ctsp)
         {
             return await _iChiTietSpRepository.Remove(ctsp);
         }
 
-        public async Task<bool> Update(ChiTietSp ctsp)
+        public async Task<string?> Update(ChiTietSp ctsp)
         {
             return await _iChiTietSpRepository.Update(ctsp);
         }

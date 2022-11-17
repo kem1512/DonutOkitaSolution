@@ -14,7 +14,7 @@ namespace Api.Services
             _iCuaHangRepository = new DonutOkitaRepository<CuaHang>(context);
         }
 
-        public async Task<bool> Add(CuaHang ch)
+        public async Task<string?> Add(CuaHang ch)
         {
             return await _iCuaHangRepository.Add(ch);
         }
@@ -30,12 +30,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool> Remove(CuaHang ch)
+        public async Task<string?> Remove(CuaHang ch)
         {
             return await _iCuaHangRepository.Remove(ch);
         }
 
-        public async Task<bool> Update(CuaHang ch)
+        public async Task<string?> Update(CuaHang ch)
         {
             return await _iCuaHangRepository.Update(ch);
         }

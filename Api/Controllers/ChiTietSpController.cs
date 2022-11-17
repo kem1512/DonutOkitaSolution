@@ -40,11 +40,6 @@ namespace Api.Controllers
             return Ok(result);
         }
 
-        protected static void Position()
-        {
-
-        }
-
         // PUT: api/chitietsp/5
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(Guid id, ChiTietSp ctsp)
@@ -54,43 +49,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iChiTietSpService.Update(ctsp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iChiTietSpService.Update(ctsp);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/chitietsp
         [HttpPost]
         public async Task<ActionResult<ChiTietSp>> Post(ChiTietSp ctsp)
         {
-            if (!await _iChiTietSpService.Add(ctsp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iChiTietSpService.Add(ctsp);
 
-            return CreatedAtAction("Get", new { id = ctsp.Id }, ctsp);
+            return result != null ? CreatedAtAction("Get", new { id = ctsp.Id }, ctsp) : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         // DELETE: api/chitietsp/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iChiTietSpService.GetById(id);
+            var ctsp = await _iChiTietSpService.GetById(id);
 
-            if (result == null)
+            if (ctsp == null)
             {
                 return NotFound();
             }
 
-            if (!await _iChiTietSpService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = _iChiTietSpService.Remove(ctsp);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

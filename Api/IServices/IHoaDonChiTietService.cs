@@ -6,11 +6,11 @@ namespace Api.IServices
     {
         Task<IEnumerable<HoaDonChiTiet>> GetAll();
 
-        Task<bool> Add(HoaDonChiTiet hdct);
+        Task<string?> Add(HoaDonChiTiet hdct);
 
-        Task<bool> Update(HoaDonChiTiet hdct);
+        Task<string?> Update(HoaDonChiTiet hdct);
 
-        Task<bool> Remove(HoaDonChiTiet hdct);
+        Task<string?> Remove(HoaDonChiTiet hdct);
 
         Task<HoaDonChiTiet?> GetById(Guid Id);
     }

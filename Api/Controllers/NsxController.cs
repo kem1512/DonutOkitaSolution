@@ -49,43 +49,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iNsxService.Update(nsx))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iNsxService.Update(nsx);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/nsx
         [HttpPost]
         public async Task<ActionResult<Nsx>> Post(Nsx nsx)
         {
-            if (!await _iNsxService.Add(nsx))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iNsxService.Add(nsx);
 
-            return CreatedAtAction("Get", new { id = nsx.Id }, nsx);
+            return result != null ? CreatedAtAction("Get", new { id = nsx.Id }, nsx) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/nsx/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iNsxService.GetById(id);
+            var nsx = await _iNsxService.GetById(id);
 
-            if (result == null)
+            if (nsx == null)
             {
                 return NotFound();
             }
 
-            if (!await _iNsxService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iNsxService.Remove(nsx);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

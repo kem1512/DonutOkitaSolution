@@ -49,43 +49,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iDongSpService.Update(dsp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iDongSpService.Update(dsp);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/dongsp
         [HttpPost]
         public async Task<ActionResult<DongSp>> Post(DongSp dsp)
         {
-            if (!await _iDongSpService.Add(dsp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iDongSpService.Add(dsp);
 
-            return CreatedAtAction("Get", new { id = dsp.Id }, dsp);
+            return result != null ? CreatedAtAction("Get", new { id = dsp.Id }, dsp) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/dongsp/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iDongSpService.GetById(id);
+            var cv = await _iDongSpService.GetById(id);
 
-            if (result == null)
+            if (cv == null)
             {
                 return NotFound();
             }
 
-            if (!await _iDongSpService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = _iDongSpService.Remove(cv);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

@@ -64,43 +64,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iNhanVienService.Update(nv))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iNhanVienService.Update(nv);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/nhanvien
         [HttpPost]
         public async Task<ActionResult<NhanVien>> Post(NhanVien nv)
         {
-            if (!await _iNhanVienService.Add(nv))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iNhanVienService.Add(nv);
 
-            return CreatedAtAction("Get", new { id = nv.Id }, nv);
+            return result != null ? CreatedAtAction("Get", new { id = nv.Id }, nv) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/nhanvien/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iNhanVienService.GetById(id);
+            var nv = await _iNhanVienService.GetById(id);
 
-            if (result == null)
+            if (nv == null)
             {
                 return NotFound();
             }
 
-            if (!await _iNhanVienService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iNhanVienService.Remove(nv);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

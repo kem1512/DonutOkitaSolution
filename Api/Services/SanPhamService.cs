@@ -15,12 +15,12 @@ namespace Api.Services
             _iSanPhamSpRepository = new DonutOkitaRepository<SanPham>(context);
         }
 
-        public async Task<bool> Add(SanPham sp)
+        public async Task<string?> Add(SanPham sp)
         {
             return await _iSanPhamSpRepository.Add(sp);
         }
 
-        public async Task<bool> Remove(SanPham sp)
+        public async Task<string?> Remove(SanPham sp)
         {
             return await _iSanPhamSpRepository.Remove(sp);
         }
@@ -30,7 +30,7 @@ namespace Api.Services
             return await _iSanPhamSpRepository.GetAll();
         }
 
-        public async Task<bool> Update(SanPham sp)
+        public async Task<string?> Update(SanPham sp)
         {
             return await _iSanPhamSpRepository.Update(sp);
         }

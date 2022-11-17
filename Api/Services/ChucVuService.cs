@@ -14,7 +14,7 @@ namespace Api.Services
             _iChucVuRepository = new DonutOkitaRepository<ChucVu>(context);
         }
 
-        public async Task<bool> Add(ChucVu cv)
+        public async Task<string?> Add(ChucVu cv)
         {
             return await _iChucVuRepository.Add(cv);
         }
@@ -30,12 +30,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool> Remove(ChucVu cv)
+        public async Task<string?> Remove(ChucVu cv)
         {
             return await _iChucVuRepository.Remove(cv);
         }
 
-        public async Task<bool> Update(ChucVu cv)
+        public async Task<string?> Update(ChucVu cv)
         {
             return await _iChucVuRepository.Update(cv);
         }

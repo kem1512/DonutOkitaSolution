@@ -7,11 +7,11 @@ namespace Api.IServices
     {
         Task<IEnumerable<SanPham>> GetAll();
 
-        Task<bool> Add(SanPham sp);
+        Task<string?> Add(SanPham sp);
 
-        Task<bool> Update(SanPham sp);
+        Task<string?> Update(SanPham sp);
 
-        Task<bool> Remove(SanPham sp);
+        Task<string?> Remove(SanPham sp);
 
         Task<SanPham?> GetById(Guid Id);
     }

@@ -56,43 +56,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iHoaDonService.Update(hd))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iHoaDonService.Update(hd);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/hoadon
         [HttpPost]
         public async Task<ActionResult<HoaDon>> Post(HoaDon hd)
         {
-            if (!await _iHoaDonService.Add(hd))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iHoaDonService.Add(hd);
 
-            return CreatedAtAction("Get", new { id = hd.Id }, hd);
+            return result != null ? CreatedAtAction("Get", new { id = hd.Id }, hd) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/hoadon/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iHoaDonService.GetById(id);
+            var hd = await _iHoaDonService.GetById(id);
 
-            if (result == null)
+            if (hd == null)
             {
                 return NotFound();
             }
 
-            if (!await _iHoaDonService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iHoaDonService.Remove(hd);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

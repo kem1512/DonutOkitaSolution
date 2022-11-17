@@ -14,7 +14,7 @@ namespace Api.Services
             _iDongSpRepository = new DonutOkitaRepository<DongSp>(context);
         }
 
-        public async Task<bool> Add(DongSp dsp)
+        public async Task<string?> Add(DongSp dsp)
         {
             return await _iDongSpRepository.Add(dsp);
         }
@@ -30,12 +30,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool> Remove(DongSp dsp)
+        public async Task<string?> Remove(DongSp dsp)
         {
             return await _iDongSpRepository.Remove(dsp);
         }
 
-        public async Task<bool> Update(DongSp dsp)
+        public async Task<string?> Update(DongSp dsp)
         {
             return await _iDongSpRepository.Update(dsp);
         }

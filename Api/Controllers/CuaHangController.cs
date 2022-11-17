@@ -49,43 +49,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iCuaHangService.Update(ch))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iCuaHangService.Update(ch);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/cuahang
         [HttpPost]
         public async Task<ActionResult<CuaHang>> Post(CuaHang ch)
         {
-            if (!await _iCuaHangService.Add(ch))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iCuaHangService.Add(ch);
 
-            return CreatedAtAction("Get", new { id = ch.Id }, ch);
+            return result != null ? CreatedAtAction("Get", new { id = ch.Id }, ch) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/cuahang/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iCuaHangService.GetById(id);
+            var cv = await _iCuaHangService.GetById(id);
 
-            if (result == null)
+            if (cv == null)
             {
                 return NotFound();
             }
 
-            if (!await _iCuaHangService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = _iCuaHangService.Remove(cv);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

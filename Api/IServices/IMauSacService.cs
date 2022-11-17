@@ -6,11 +6,11 @@ namespace Api.IServices
     {
         Task<IEnumerable<MauSac>> GetAll();
 
-        Task<bool> Add(MauSac ms);
+        Task<string?> Add(MauSac ms);
 
-        Task<bool> Update(MauSac ms);
+        Task<string?> Update(MauSac ms);
 
-        Task<bool> Remove(MauSac ms);
+        Task<string?> Remove(MauSac ms);
 
         Task<MauSac?> GetById(Guid Id);
     }

@@ -50,43 +50,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iChucVuService.Update(cv))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iChucVuService.Update(cv);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/chucvu
         [HttpPost]
         public async Task<ActionResult<ChucVu>> Post(ChucVu cv)
         {
-            if (!await _iChucVuService.Add(cv))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iChucVuService.Add(cv);
 
-            return CreatedAtAction("Get", new { id = cv.Id }, cv);
+            return result != null ? CreatedAtAction("Get", new { id = cv.Id }, cv) : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         // DELETE: api/chucvu/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iChucVuService.GetById(id);
+            var cv = await _iChucVuService.GetById(id);
 
-            if (result == null)
+            if (cv == null)
             {
                 return NotFound();
             }
 
-            if (!await _iChucVuService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = _iChucVuService.Remove(cv);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

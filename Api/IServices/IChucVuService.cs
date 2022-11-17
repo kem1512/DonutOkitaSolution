@@ -6,11 +6,11 @@ namespace Api.IServices
     {
         Task<IEnumerable<ChucVu>> GetAll();
 
-        Task<bool> Add(ChucVu cv);
+        Task<string?> Add(ChucVu cv);
 
-        Task<bool> Update(ChucVu cv);
+        Task<string?> Update(ChucVu cv);
 
-        Task<bool> Remove(ChucVu cv);
+        Task<string?> Remove(ChucVu cv);
 
         Task<ChucVu?> GetById(Guid Id);
     }

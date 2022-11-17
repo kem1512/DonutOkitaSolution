@@ -14,7 +14,7 @@ namespace Api.Services
             _iHoaDonChiTietRepository = new DonutOkitaRepository<HoaDonChiTiet>(context);
         }
 
-        public async Task<bool> Add(HoaDonChiTiet hdct)
+        public async Task<string?> Add(HoaDonChiTiet hdct)
         {
             return await _iHoaDonChiTietRepository.Add(hdct);
         }
@@ -30,12 +30,12 @@ namespace Api.Services
             return await Task.FromResult(result);
         }
 
-        public async Task<bool> Remove(HoaDonChiTiet hdct)
+        public async Task<string?> Remove(HoaDonChiTiet hdct)
         {
             return await _iHoaDonChiTietRepository.Remove(hdct);
         }
 
-        public async Task<bool> Update(HoaDonChiTiet hdct)
+        public async Task<string?> Update(HoaDonChiTiet hdct)
         {
             return await _iHoaDonChiTietRepository.Update(hdct);
         }

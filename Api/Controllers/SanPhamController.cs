@@ -15,6 +15,7 @@ namespace Api.Controllers
     {
         private readonly ISanPhamService _iSanPhamService;
         private readonly ConverToViewModel _converToViewModel;
+
         public SanPhamController(DonutOkitaContext context)
         {
             _iSanPhamService = new SanPhamService(context);
@@ -57,43 +58,34 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            if (!await _iSanPhamService.Update(sp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iSanPhamService.Update(sp);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/sanpham
         [HttpPost]
         public async Task<ActionResult<SanPham>> Post(SanPham sp)
         {
-            if (!await _iSanPhamService.Add(sp))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iSanPhamService.Add(sp);
 
-            return CreatedAtAction("Get", new { id = sp.Id }, sp);
+            return result != null ? CreatedAtAction("Get", new { id = sp.Id }, sp) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/sanpham/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _iSanPhamService.GetById(id);
+            var sp = await _iSanPhamService.GetById(id);
 
-            if (result == null)
+            if (sp == null)
             {
                 return NotFound();
             }
 
-            if (!await _iSanPhamService.Remove(result))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _iSanPhamService.Remove(sp);
 
-            return NoContent();
+            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }
