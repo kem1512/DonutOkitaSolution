@@ -29,9 +29,9 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetHoaDonViewModel")]
-        public ActionResult<IEnumerable<HoaDonViewModel>> GetHoaDonViewModel()
+        public async Task<ActionResult<IEnumerable<HoaDonViewModel>>> GetHoaDonViewModel()
         {
-            return Ok(_converToViewModel.HoaDonViewModels().Result);
+            return Ok(await _converToViewModel.HoaDonViewModels());
         }
 
         [HttpGet("{id}")]

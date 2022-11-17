@@ -35,12 +35,6 @@ namespace Api.Controllers
             return Ok(await _converToViewModel.NhanVienViewModels());
         }
 
-        [HttpGet("GetNhanVienViewModel/{id}")]
-        public async Task<ActionResult<IEnumerable<NhanVienViewModel>>> GetNhanVienViewModelById(Guid id)
-        {
-            return Ok(await _converToViewModel.NhanVienViewModelById(id));
-        }
-
         // GET: api/nhanvien/5
         [HttpGet("{id}")]
         public async Task<ActionResult<NhanVien>> Get(Guid id)

@@ -14,12 +14,12 @@ namespace Api.Controllers
     public class SanPhamController : ControllerBase
     {
         private readonly ISanPhamService _iSanPhamService;
-        private readonly ConverToViewModel _converToViewModel;
+        private readonly ConverToViewModel _ConverToViewModel;
 
         public SanPhamController(DonutOkitaContext context)
         {
             _iSanPhamService = new SanPhamService(context);
-            _converToViewModel = new ConverToViewModel(context);
+            _ConverToViewModel = new ConverToViewModel(context);
         }
 
         // GET: api/sanpham
@@ -30,9 +30,9 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetSanPhamViewModel")]
-        public ActionResult<IEnumerable<SanPhamViewModel>> GetSanPhamViewModel()
+        public async Task<ActionResult<IEnumerable<SanPhamViewModel>>> GetSanPhamViewModel()
         {
-            return Ok(_converToViewModel.SanPhamViewModels().Result);
+            return Ok(await _ConverToViewModel.SanPhamViewModels());
         }
 
         // GET: api/sanpham/5
