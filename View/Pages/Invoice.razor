@@ -139,10 +139,10 @@
 
     protected async override Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             Model = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
             ModelOld = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
         }
@@ -167,7 +167,7 @@
             result.HoaDon.TinhTrang = 4;
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var httpResponse = await httpClient.PutAsJsonAsync<HoaDon>("https://localhost:7033/api/hoadon/" + id, result.HoaDon))
                 {
                     if (httpResponse.IsSuccessStatusCode)

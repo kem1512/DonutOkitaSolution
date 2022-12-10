@@ -51,7 +51,7 @@ namespace Api.Controllers
 
             var result = await _iChiTietSpService.Update(ctsp);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/chitietsp
@@ -60,7 +60,7 @@ namespace Api.Controllers
         {
             var result = await _iChiTietSpService.Add(ctsp);
 
-            return result != null ? CreatedAtAction("Get", new { id = ctsp.Id }, ctsp) : StatusCode(StatusCodes.Status500InternalServerError);
+            return result == null ? CreatedAtAction("Get", new { id = ctsp.Id }, ctsp) : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         // DELETE: api/chitietsp/5

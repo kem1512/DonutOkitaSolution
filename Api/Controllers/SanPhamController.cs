@@ -60,7 +60,7 @@ namespace Api.Controllers
 
             var result = await _iSanPhamService.Update(sp);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/sanpham
@@ -69,7 +69,7 @@ namespace Api.Controllers
         {
             var result = await _iSanPhamService.Add(sp);
 
-            return result != null ? CreatedAtAction("Get", new { id = sp.Id }, sp) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = sp.Id }, sp) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/sanpham/5
@@ -85,7 +85,7 @@ namespace Api.Controllers
 
             var result = await _iSanPhamService.Remove(sp);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

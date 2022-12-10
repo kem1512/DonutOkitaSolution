@@ -41,7 +41,7 @@
                                         <InputSelect @bind-Value="ChiTietSp.IdSp" class="form-control" data-toggle="select">
                                             @if (SanPhams != null)
                                             {
-                                                <option value="">Chọn chức vụ</option>
+                                                <option value="">Chọn sản phẩm</option>
                                                 @foreach (var x in SanPhams)
                                                 {
                                                     <option value="@x.Id">@x.Ten</option>
@@ -209,7 +209,9 @@
                             @if (SanPhamViewModels != null)
                             {
                                 var Model = SanPhamViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.SanPham.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index })
+                                .Where(c => c?.Value.SanPham.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false)
+                                : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -267,12 +269,24 @@
         this.MaxRow = MaxRow;
     }
 
+    private bool IsDuplicate()
+    {
+        if (SanPhamViewModels != null)
+        {
+            if (SanPhamViewModels.Exists(c => c.ChiTietSp?.IdDongSp == ChiTietSp.IdDongSp && c.ChiTietSp?.IdNsx == ChiTietSp.IdNsx && c.ChiTietSp?.IdMauSac == ChiTietSp.IdMauSac))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
             Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
             DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
@@ -291,15 +305,19 @@
     {
         if (context.Validate())
         {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chitietsp", ChiTietSp))
+            if(!IsDuplicate()){
+                using (var httpClient = new HttpClient())
                 {
-                    if (response.IsSuccessStatusCode)
-                        SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
+                    using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chitietsp", ChiTietSp))
+                    {
+                        if (response.IsSuccessStatusCode)
+                            SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+                    }
+                    Clear();
                 }
-                Clear();
+            }else{
+                Console.WriteLine("Failed");
             }
         }
     }
@@ -308,7 +326,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/chitietsp/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -324,7 +342,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync<ChiTietSp>("https://localhost:7033/api/chitietsp/" + ChiTietSp.Id, ChiTietSp))
                 {
                     if (response.IsSuccessStatusCode)

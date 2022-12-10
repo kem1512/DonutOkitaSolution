@@ -51,7 +51,7 @@ namespace Api.Controllers
 
             var result = await _iDongSpService.Update(dsp);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/dongsp
@@ -60,7 +60,7 @@ namespace Api.Controllers
         {
             var result = await _iDongSpService.Add(dsp);
 
-            return result != null ? CreatedAtAction("Get", new { id = dsp.Id }, dsp) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = dsp.Id }, dsp) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/dongsp/5

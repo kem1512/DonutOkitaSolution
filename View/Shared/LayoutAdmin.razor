@@ -84,9 +84,9 @@
 
     protected async override Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") != null)
+        if (await Session.GetItemAsStringAsync("jwt") != null)
         {
-            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("isLogin"));
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("jwt"));
             var result = jwt.Claims.FirstOrDefault(c => c.Type.Equals("FirstName"));
             if (result != null)
             {
@@ -150,9 +150,9 @@
 
     protected async override Task OnParametersSetAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") != null)
+        if (await Session.GetItemAsStringAsync("jwt") != null)
         {
-            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("isLogin"));
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("jwt"));
             var firstName = jwt.Claims.FirstOrDefault(c => c.Type.Equals("FirstName"));
             var lastName = jwt.Claims.FirstOrDefault(c => c.Type.Equals("LastName"));
             if (firstName != null && lastName != null)
@@ -164,9 +164,9 @@
 
     private async Task LogOut()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") != null)
+        if (await Session.GetItemAsStringAsync("jwt") != null)
         {
-            await Session.RemoveItemAsync("isLogin");
+            await Session.RemoveItemAsync("jwt");
             NavigationManager.NavigateTo("/login");
         }
     }

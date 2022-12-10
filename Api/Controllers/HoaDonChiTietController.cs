@@ -51,7 +51,7 @@ namespace Api.Controllers
 
             var result = await _iHoaDonChiTietService.Update(sp);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/hoadonchitiet
@@ -60,7 +60,7 @@ namespace Api.Controllers
         {
             var result = await _iHoaDonChiTietService.Add(sp);
 
-            return result != null ? CreatedAtAction("Get", new { id = sp.IdHoaDon }, sp) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = sp.IdHoaDon }, sp) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/hoadonchitiet/5
@@ -76,7 +76,7 @@ namespace Api.Controllers
 
             var result = await _iHoaDonChiTietService.Add(hdct);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

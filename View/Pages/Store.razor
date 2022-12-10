@@ -126,7 +126,9 @@
                             @if (CuaHangs != null)
                             {
                                 var Model = CuaHangs.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index })
+                                .Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) 
+                                : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -174,10 +176,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
         }
     }
@@ -194,7 +196,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/cuahang", CuaHang))
                 {
                     if (response.IsSuccessStatusCode)
@@ -209,7 +211,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/cuahang/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -225,7 +227,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync<CuaHang>("https://localhost:7033/api/cuahang/" + CuaHang.Id, CuaHang))
                 {
                     if (response.IsSuccessStatusCode)

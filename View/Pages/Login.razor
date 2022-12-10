@@ -83,7 +83,7 @@
 
     protected async override Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") != null) NavigationManager.NavigateTo("/");
+        if (await Session.GetItemAsStringAsync("jwt") != null) NavigationManager.NavigateTo("/");
     }
 
     private async Task SignIn(){
@@ -94,7 +94,7 @@
                 var result = await httpClient.GetAsync("https://localhost:7033/api/token/" + NhanVien.Sdt + "/" + NhanVien.MatKhau);
                 if (result.IsSuccessStatusCode)
                 {
-                    await Session.SetItemAsStringAsync("isLogin", result.Content.ReadAsStringAsync().Result);
+                    await Session.SetItemAsStringAsync("jwt", result.Content.ReadAsStringAsync().Result);
                     NavigationManager.NavigateTo("/");
                     return;
                 }else{

@@ -51,7 +51,7 @@ namespace Api.Controllers
 
             var result = await _iNsxService.Update(nsx);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/nsx
@@ -60,7 +60,7 @@ namespace Api.Controllers
         {
             var result = await _iNsxService.Add(nsx);
 
-            return result != null ? CreatedAtAction("Get", new { id = nsx.Id }, nsx) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = nsx.Id }, nsx) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/nsx/5
@@ -76,7 +76,7 @@ namespace Api.Controllers
 
             var result = await _iNsxService.Remove(nsx);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Data.IRepositories
 {
     public interface IDonutOkitaRepository<TEntity> where TEntity : class
     {
-        Task<string?> Add(TEntity entity);
+        Task<string?> Add(TEntity obj);
 
         Task<string?> Update(TEntity obj);
 

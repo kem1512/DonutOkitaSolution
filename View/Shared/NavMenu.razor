@@ -9,7 +9,6 @@
         </button>
         <!-- Brand -->
         <a class="navbar-brand pt-0" href="../index.html">
-            @*<img src="../assets/img/brand/blue.png" class="navbar-brand-img" alt="...">*@
             Donut Okita
         </a>
         <!-- User -->
@@ -146,9 +145,9 @@
 @code{
     private async Task LogOut()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") != null)
+        if (await Session.GetItemAsStringAsync("jwt") != null)
         {
-            await Session.RemoveItemAsync("isLogin");
+            await Session.RemoveItemAsync("jwt");
             NavigationManager.NavigateTo("/login");
         }
     }

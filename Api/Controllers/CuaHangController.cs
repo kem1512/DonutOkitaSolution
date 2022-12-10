@@ -51,7 +51,7 @@ namespace Api.Controllers
 
             var result = await _iCuaHangService.Update(ch);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/cuahang
@@ -60,7 +60,7 @@ namespace Api.Controllers
         {
             var result = await _iCuaHangService.Add(ch);
 
-            return result != null ? CreatedAtAction("Get", new { id = ch.Id }, ch) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = ch.Id }, ch) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/cuahang/5
@@ -76,7 +76,7 @@ namespace Api.Controllers
 
             var result = _iCuaHangService.Remove(cv);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

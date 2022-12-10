@@ -98,8 +98,10 @@
                         <tbody>
                             @if (SanPhams != null)
                             {
-                                var Model = SanPhams = SanPhams.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
+                                var Model = SanPhams.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index })
+                                .Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) 
+                                : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -147,10 +149,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             SanPhams = await httpClient.GetFromJsonAsync<List<SanPham>>("https://localhost:7033/api/sanpham");
         }
     }
@@ -167,7 +169,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/sanpham", SanPham))
                 {
                     if (response.IsSuccessStatusCode)
@@ -182,7 +184,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/sanpham/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -198,7 +200,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync<SanPham>("https://localhost:7033/api/sanpham/" + SanPham.Id, SanPham))
                 {
                     if (response.IsSuccessStatusCode)

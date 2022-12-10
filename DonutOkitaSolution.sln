@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "View", "View\View.csproj", "{85EE72C7-58B4-4A07-A85E-520A966B963F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewGuest", "ViewGuest\ViewGuest.csproj", "{69299514-71CE-40DD-BEA9-5FB8A2B0DE34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewGuest", "ViewGuest\ViewGuest.csproj", "{69299514-71CE-40DD-BEA9-5FB8A2B0DE34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

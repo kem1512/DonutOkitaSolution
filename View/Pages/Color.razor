@@ -147,10 +147,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             MauSacs = await httpClient.GetFromJsonAsync<List<MauSac>>("https://localhost:7033/api/mausac");
         }
     }
@@ -167,7 +167,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/mausac", MauSac))
                 {
                     if (response.IsSuccessStatusCode)
@@ -182,7 +182,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/mausac/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -198,7 +198,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync<MauSac>("https://localhost:7033/api/mausac/" + MauSac.Id, MauSac))
                 {
                     if (response.IsSuccessStatusCode)

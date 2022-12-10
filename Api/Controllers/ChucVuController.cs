@@ -52,7 +52,7 @@ namespace Api.Controllers
 
             var result = await _iChucVuService.Update(cv);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/chucvu
@@ -61,7 +61,7 @@ namespace Api.Controllers
         {
             var result = await _iChucVuService.Add(cv);
 
-            return result != null ? CreatedAtAction("Get", new { id = cv.Id }, cv) : StatusCode(StatusCodes.Status500InternalServerError);
+            return result == null ? CreatedAtAction("Get", new { id = cv.Id }, cv) : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         // DELETE: api/chucvu/5

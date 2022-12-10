@@ -172,13 +172,13 @@
 
     protected async override Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
-        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("isLogin"));
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("jwt"));
         var id = jwt.Claims.FirstOrDefault(c => c.Type == "Id");
         if(id != null){
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 Model = await httpClient.GetFromJsonAsync<NhanVienViewModel>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel/" + id.Value);
             }
         }
@@ -186,14 +186,14 @@
 
     protected async override Task OnParametersSetAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
-        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("isLogin"));
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(await Session.GetItemAsStringAsync("jwt"));
         var id = jwt.Claims.FirstOrDefault(c => c.Value == "Id");
         if (id != null)
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 Model = await httpClient.GetFromJsonAsync<NhanVienViewModel>("https://localhost:7033/api/nhanvien/getnhanvienviewmodel/" + id.Value);
             }
         }
@@ -205,7 +205,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync("https://localhost:7033/api/nhanvien/" + Model?.NhanVien?.Id, Model?.NhanVien))
                 {
                     if (response.IsSuccessStatusCode)

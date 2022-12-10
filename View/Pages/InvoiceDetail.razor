@@ -139,11 +139,11 @@
 
     private async Task ChangeStatus(int val)
     {
-        if (await Session.GetItemAsStringAsync("isLogin") != null)
+        if (await Session.GetItemAsStringAsync("jwt") != null)
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 if (HoaDonViewModels != null)
                 {
                     switch(val){
@@ -182,7 +182,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             HoaDonViewModels = await httpClient.GetFromJsonAsync<List<HoaDonViewModel>>("https://localhost:7033/api/hoadon/gethoadonviewmodel");
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
             if (HoaDonViewModels != null)

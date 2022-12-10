@@ -1,0 +1,174 @@
+﻿@page "/productview/{id:guid}"
+@layout LayoutAdmin
+@using Data.DomainClass
+@using Data.ViewModels
+@using System.Net.Http.Headers
+@inject ISessionStorageService Session
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRunTime
+
+@if (SanPhamViewModels != null)
+{
+    <div class="container-fluid mt--7">
+        <div class="row">
+            <div class="col-xl-12 order-xl-1">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-5 text-center">
+                                <img class="effectImage" src="@Anh" style="width: 50%" />
+                            </div>
+                            <div class="col-7">
+                                <EditForm Model="ChiTietSp">
+                                    <ValidationMessage For="@(() => ChiTietSp.IdMauSac)"></ValidationMessage>
+                                    <DataAnnotationsValidator />
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <h1 style="text-transform: uppercase" class="text-danger"> @SanPhamViewModels.FirstOrDefault()?.SanPham?.Ten</h1>
+                                            <hr style="margin: 1rem auto" />
+                                            <del>₫@string.Format("{0:0,0}", @SanPhamViewModels.FirstOrDefault()?.ChiTietSp?.GiaNhap)</del> <span class="display-4 ml-2">₫@string.Format("{0:0,0}", @SanPhamViewModels.FirstOrDefault()?.ChiTietSp?.GiaBan)</span>
+                                        </div>
+                                        <div class="col-12 mb-4">
+                                            Màu sắc
+                                            @foreach (var x in SanPhamViewModels)
+                                            {
+                                                <button type="button" class="btn btn-secondary ml-2 buttonChange" @onmousedown="() => ChangeImage(x.ChiTietSp?.Id)">@x.MauSac?.Ten</button>
+                                            }
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex" style="height: 2.5rem">
+                                                Số lượng
+                                                <button type="button" class="btn btn-danger ml-3 mr-0" @onclick="Decrease"><i class="ni ni-fat-delete"></i></button>
+                                                <input style="height: 2.5rem; width: 15%" type="number" class="form-control form-control-alternative" @bind="Quantity" />
+                                                <button type="button" class="btn btn-info" @onclick="Increase"><i class="ni ni-fat-add"></i></button>
+
+                                                <button class="btn btn-info" @onclick="() => AddCart(ChiTietSp.Id)">Thêm vào giỏ hàng</button>
+                                                <button class="btn btn-info">Mua ngay</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                        <div class="px-4 py-4">
+                            <div class="pb-2"><strong class="mr-3" style="@(Status ? "text-decoration: underline 2px" : "")" @onclick="ChangeComment">Mô tả</strong><strong @onclick="ChangeComment" style="@(!Status ? "text-decoration: underline 2px" : "")">Đánh giá</strong></div>
+                            @if(Status){
+                                <div>
+                                    What is Lorem Ipsum?
+                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                                </div>
+                            }else{
+                                <p>
+                                    Đánh giá : 10 sao
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private int Quantity = 1;
+
+    private string? Anh;
+
+    private bool Status = false; 
+
+    private List<SanPhamViewModel>? SanPhamViewModels;
+
+    private ChiTietSp ChiTietSp = new ChiTietSp();
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
+        using (var httpClient = new HttpClient())
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
+            SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
+            if (SanPhamViewModels != null)
+            {
+                SanPhamViewModels = SanPhamViewModels.Where(c => c.SanPham?.Id == Id).ToList();
+                Anh = SanPhamViewModels.FirstOrDefault()?.ChiTietSp?.Anh;
+            }
+        }
+    }
+
+    private void ChangeComment(){
+        Console.WriteLine("!23");
+        Status = !Status;
+    }
+
+    private void Increase()
+    {
+        Quantity += 1;
+    }
+
+    private void Decrease()
+    {
+        Quantity -= 1;
+    }
+
+    private void ChangeImage(Guid? id)
+    {
+        if (SanPhamViewModels != null)
+        {
+            Anh = SanPhamViewModels.FirstOrDefault(c => c.ChiTietSp?.Id == id)?.ChiTietSp?.Anh;
+            var result = SanPhamViewModels.FirstOrDefault(c => c.ChiTietSp?.Anh == Anh);
+            if (result != null && result.ChiTietSp != null)
+            {
+                ChiTietSp = result.ChiTietSp;
+            }
+        }
+    }
+
+    private async Task<int> IsExist(Guid? id)
+    {
+        List<GioHangViewModel> cart = await Session.GetItemAsync<List<GioHangViewModel>>("cart");
+        if (cart != null)
+        {
+            for (int i = 0; i < cart.Count; i++)
+            {
+                var result = cart[i]?.SanPhamViewModel?.ChiTietSp?.Id.Equals(id);
+                if (result ?? false)
+                {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private async Task AddCart(Guid? id)
+    {
+        if (ChiTietSp.IdMauSac != null)
+        {
+            if (await Session.GetItemAsStringAsync("cart") == null)
+            {
+                List<GioHangViewModel> cart = new List<GioHangViewModel>();
+                cart.Add(new GioHangViewModel() { SanPhamViewModel = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id), Quantity = Quantity });
+                await Session.SetItemAsync<List<GioHangViewModel>>("cart", cart);
+            }
+            else
+            {
+                List<GioHangViewModel> cart = await Session.GetItemAsync<List<GioHangViewModel>>("cart");
+                var index = await IsExist(id);
+                if (index != -1)
+                {
+                    cart[index].Quantity += Quantity;
+                }
+                else
+                {
+                    cart.Add(new GioHangViewModel { SanPhamViewModel = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id), Quantity = Quantity });
+                }
+                await Session.SetItemAsync<List<GioHangViewModel>>("cart", cart);
+                await JSRunTime.InvokeVoidAsync("alertMessage", "Thêm thành công", "success");
+            }
+        }
+    }
+}

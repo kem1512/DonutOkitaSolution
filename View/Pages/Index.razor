@@ -2,7 +2,6 @@
 @page "/name/{NameSearch}"
 @inject ISessionStorageService Session
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRunTime
 @layout LayoutAdmin
 @using Data.ViewModels
 @using System.Net.Http.Headers
@@ -23,7 +22,11 @@
                         <div class="row">
                             @if (SanPhamViewModels != null)
                             {
-                                foreach (var x in NameSearch != null ? SanPhamViewModels.Where(c => c.SanPham?.Ten?.ToLower().Trim().Contains(NameSearch) ?? false) : SanPhamViewModels)
+                                var Model = SanPhamViewModels.GroupBy(a => a.SanPham?.Ten)
+                                .SelectMany(b => b.OrderBy(c => c.ChiTietSp?.GiaBan)
+                                .Select((Value, Index) => new { Value, Index = Index + 1 }))
+                                .Where(c => c.Index == 1).Select(c => c.Value).ToList();
+                                foreach (var x in NameSearch != null ? Model.Where(c => c.SanPham?.Ten?.ToLower().Trim().Contains(NameSearch) ?? false) : Model)
                                 {
                                     if (x.SanPham?.Id == x.ChiTietSp?.IdSp)
                                     {
@@ -31,7 +34,7 @@
                                             <div class="card shadow align-items-center" style="border-radius: 2.375rem;">
                                                 <img src="@x.ChiTietSp?.Anh" class="card-img-top p-4">
                                                 <div class="card-body pt-2 text-center">
-                                                    <a href=""><h4 class="card-subtitle mb-2 text-muted text-uppercase">@x.SanPham?.Ten</h4></a>
+                                                    <a href="/productview/@x.SanPham?.Id"><h4 class="card-subtitle mb-2 text-muted text-uppercase">@x.SanPham?.Ten</h4></a>
                                                     <h3 class="card-text d-flex justify-content-between">
                                                         Từ @string.Format("{0:0,0}", x.ChiTietSp?.GiaBan) VNĐ
                                                     </h3>
@@ -63,60 +66,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             SanPhamViewModels = await httpClient.GetFromJsonAsync<List<SanPhamViewModel>>("https://localhost:7033/api/sanpham/getsanphamviewmodel");
-            if (SanPhamViewModels != null)
-            {
-                SanPhamViewModels = SanPhamViewModels.GroupBy(a => a.SanPham?.Ten)
-                .SelectMany(b => b.OrderBy(c => c.ChiTietSp?.GiaBan)
-                .Select((Value, Index) => new { Value, Index = Index + 1 }))
-                .Where(c => c.Index == 1).Select(c => c.Value).ToList();
-            }
-        }
-    }
-
-    private async Task<int> IsExist(Guid? id)
-    {
-        List<GioHangViewModel> cart = await Session.GetItemAsync<List<GioHangViewModel>>("cart");
-        if (cart != null)
-        {
-            for (int i = 0; i < cart.Count; i++)
-            {
-                var result = cart[i]?.SanPhamViewModel?.ChiTietSp?.Id.Equals(id);
-                if (result ?? false)
-                {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
-    private async Task AddCart(Guid? id)
-    {
-        if (await Session.GetItemAsStringAsync("cart") == null)
-        {
-            List<GioHangViewModel> cart = new List<GioHangViewModel>();
-            cart.Add(new GioHangViewModel() { SanPhamViewModel = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id), Quantity = 1 });
-            await Session.SetItemAsync<List<GioHangViewModel>>("cart", cart);
-        }
-        else
-        {
-            List<GioHangViewModel> cart = await Session.GetItemAsync<List<GioHangViewModel>>("cart");
-            var index = await IsExist(id);
-            if (index != -1)
-            {
-                cart[index].Quantity++;
-            }
-            else
-            {
-                cart.Add(new GioHangViewModel { SanPhamViewModel = SanPhamViewModels?.FirstOrDefault(c => c.ChiTietSp?.Id == id), Quantity = 1 });
-            }
-            await Session.SetItemAsync<List<GioHangViewModel>>("cart", cart);
-            await JSRunTime.InvokeVoidAsync("alertMessage", "Thêm thành công", "success");
         }
     }
 }

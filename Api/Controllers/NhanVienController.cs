@@ -60,7 +60,7 @@ namespace Api.Controllers
 
             var result = await _iNhanVienService.Update(nv);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/nhanvien
@@ -69,7 +69,7 @@ namespace Api.Controllers
         {
             var result = await _iNhanVienService.Add(nv);
 
-            return result != null ? CreatedAtAction("Get", new { id = nv.Id }, nv) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = nv.Id }, nv) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/nhanvien/5
@@ -85,7 +85,7 @@ namespace Api.Controllers
 
             var result = await _iNhanVienService.Remove(nv);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

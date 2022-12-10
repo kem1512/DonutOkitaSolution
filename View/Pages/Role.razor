@@ -99,7 +99,9 @@
                             @if (ChucVus != null)
                             {
                                 var Model = ChucVus.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index })
+                                .Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) 
+                                : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -147,10 +149,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
         }
     }
@@ -167,7 +169,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/chucvu", ChucVu))
                 {
                     if (response.IsSuccessStatusCode)
@@ -182,7 +184,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/chucvu/" + id))
             {
                 if (response.IsSuccessStatusCode)
@@ -198,7 +200,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync<ChucVu>("https://localhost:7033/api/chucvu/" + ChucVu.Id, ChucVu))
                 {
                     if (response.IsSuccessStatusCode)

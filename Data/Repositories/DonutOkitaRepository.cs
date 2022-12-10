@@ -32,7 +32,7 @@ namespace Api.Repositories
         {
             try
             {
-                Context.Entry(entity).State = EntityState.Modified; Entity.Update(entity); await Context.SaveChangesAsync();
+                Entity.Update(entity); await Context.SaveChangesAsync();
                 return null;
             }
             catch (Exception e)
@@ -56,7 +56,49 @@ namespace Api.Repositories
 
         public async Task<IEnumerable<TEntity>> GetAll()
         {
-            return await Entity.ToListAsync();
+            return await Entity.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<string?> Add(Dictionary<TEntity, TEntity> obj)
+        {
+            try
+            {
+                await Entity.AddRangeAsync(obj.Values);
+                await Context.SaveChangesAsync();
+                return null;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        public async Task<string?> Update(Dictionary<TEntity, TEntity> obj)
+        {
+            try
+            {
+                Entity.UpdateRange(obj.Values);
+                await Context.SaveChangesAsync();
+                return null;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        public async Task<string?> Remove(Dictionary<TEntity, TEntity> obj)
+        {
+            try
+            {
+                //Entity.RemoveRange(x.Value);
+                await Context.SaveChangesAsync();
+                return null;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
     }
 }

@@ -98,8 +98,11 @@
                         <tbody>
                             @if (DongSps != null)
                             {
-                                var Model = DongSps.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
+                                var Model = DongSps.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList(); // Ví dụ lấy 5 sản phẩm mỗi trang và tổng sản phẩm là 20 => Có 4 trang
+                                // CurrentPageIndex là trang hiện tại, MaxRow là số sản phẩm sẽ hiển thị trong 1 trang
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }) // Nếu NameSearch khác null thì Model sẽ lấy index và giá trị của các bản ghi có tên gần đúng với NameSearch
+                                        .Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) 
+                                        : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -139,6 +142,8 @@
 
     private DongSp DongSp = new DongSp();
 
+    private string? jwt = null;
+
     private void ChangeMaxRow(int MaxRow)
     {
         this.MaxRow = MaxRow;
@@ -146,10 +151,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        // Nếu chưa đăng nhập thì sẽ chuyển hướng người dùng về trang đăng nhập
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            jwt = await Session.GetItemAsStringAsync("jwt"); 
+
+            if(jwt != null) 
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+
+            // Cập nhật lại dữ liệu cho list
             DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
         }
     }
@@ -166,10 +177,10 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/dongsp", DongSp))
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+                using (var httpResponse = await httpClient.PostAsJsonAsync("https://localhost:7033/api/dongsp", DongSp))
                 {
-                    if (response.IsSuccessStatusCode)
+                    if (httpResponse.IsSuccessStatusCode)
                         DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
                 }
                 Clear();
@@ -181,10 +192,10 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-            using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/dongsp/" + id))
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+            using (var httpResponse = await httpClient.DeleteAsync("https://localhost:7033/api/dongsp/" + id))
             {
-                if (response.IsSuccessStatusCode)
+                if (httpResponse.IsSuccessStatusCode)
                     DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
             }
             Clear();
@@ -197,10 +208,10 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
-                using (var response = await httpClient.PutAsJsonAsync<DongSp>("https://localhost:7033/api/dongsp/" + DongSp.Id, DongSp))
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+                using (var httpResponse = await httpClient.PutAsJsonAsync<DongSp>("https://localhost:7033/api/dongsp/" + DongSp.Id, DongSp))
                 {
-                    if (response.IsSuccessStatusCode)
+                    if (httpResponse.IsSuccessStatusCode)
                         DongSps = await httpClient.GetFromJsonAsync<List<DongSp>>("https://localhost:7033/api/dongsp");
                 }
                 Clear();

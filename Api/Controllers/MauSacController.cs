@@ -51,7 +51,7 @@ namespace Api.Controllers
 
             var result = await _iMauSacService.Update(ms);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/mausac
@@ -60,7 +60,7 @@ namespace Api.Controllers
         {
             var result = await _iMauSacService.Add(ms);
 
-            return result != null ? CreatedAtAction("Get", new { id = ms.Id }, ms) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = ms.Id }, ms) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/mausac/5
@@ -76,7 +76,7 @@ namespace Api.Controllers
 
             var result = await _iMauSacService.Remove(ms);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

@@ -20,7 +20,7 @@
                             <strong class="mb-0">Quản lý nhân viên</strong>
                         </div>
                         <div class="col-4 text-right">
-                            <NavLink class="btn btn-sm btn-info" href="/rule">Chức vụ</NavLink>
+                            <NavLink class="btn btn-sm btn-info" href="/role">Chức vụ</NavLink>
                             <NavLink class="btn btn-sm btn-warning" href="/store">Cửa hàng</NavLink>
                         </div>
                     </div>
@@ -219,7 +219,7 @@
                         <tbody>
                             @if (NhanVienViewModels != null)
                             {
-                                var Model = NhanVienViewModels = NhanVienViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
+                                var Model = NhanVienViewModels.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
                                 foreach (var x in NameSearch != null ? Model.Where(c => c?.NhanVien.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model)
                                 {
                                     <tr>
@@ -277,10 +277,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             CuaHangs = await httpClient.GetFromJsonAsync<List<CuaHang>>("https://localhost:7033/api/cuahang");
             ChucVus = await httpClient.GetFromJsonAsync<List<ChucVu>>("https://localhost:7033/api/chucvu");
             NhanViens = await httpClient.GetFromJsonAsync<List<NhanVien>>("https://localhost:7033/api/nhanvien");
@@ -300,7 +300,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PostAsJsonAsync("https://localhost:7033/api/nhanvien", NhanVien))
                 {
                     if(response.IsSuccessStatusCode){
@@ -317,7 +317,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var response = await httpClient.DeleteAsync("https://localhost:7033/api/nhanvien/" + id))
             {
                 if (response.IsSuccessStatusCode) { 
@@ -335,7 +335,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var response = await httpClient.PutAsJsonAsync<NhanVien>("https://localhost:7033/api/nhanvien/" + NhanVien.Id, NhanVien))
                 {
                     if (response.IsSuccessStatusCode) { 

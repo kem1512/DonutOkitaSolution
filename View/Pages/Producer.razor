@@ -99,7 +99,9 @@
                             @if (Nsxs != null)
                             {
                                 var Model = Nsxs.Skip((CurrentPageIndex - 1) * MaxRow).Take(MaxRow).Take(MaxRow).ToList();
-                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index }).Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) : Model.Select((Value, Index) => new { Value, Index }))
+                                foreach (var x in NameSearch != null ? Model.Select((Value, Index) => new { Value, Index })
+                                .Where(c => c?.Value.Ten?.ToLower().Trim().Contains(NameSearch.ToLower().Trim()) ?? false) 
+                                : Model.Select((Value, Index) => new { Value, Index }))
                                 {
                                     <tr>
                                         <td>@(x.Index + 1)</td>
@@ -147,10 +149,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await Session.GetItemAsStringAsync("isLogin") == null) NavigationManager.NavigateTo("/login");
+        if (await Session.GetItemAsStringAsync("jwt") == null) NavigationManager.NavigateTo("/login");
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             Nsxs = await httpClient.GetFromJsonAsync<List<Nsx>>("https://localhost:7033/api/nsx");
         }
     }
@@ -167,7 +169,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var httpResponse = await httpClient.PostAsJsonAsync("https://localhost:7033/api/nsx", Nsx))
                 {
                     if (httpResponse.IsSuccessStatusCode)
@@ -182,7 +184,7 @@
     {
         using (var httpClient = new HttpClient())
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
             using (var httpResponse = await httpClient.DeleteAsync("https://localhost:7033/api/nsx/" + id))
             {
                 if (httpResponse.IsSuccessStatusCode)
@@ -198,7 +200,7 @@
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("isLogin"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await Session.GetItemAsStringAsync("jwt"));
                 using (var httpResponse = await httpClient.PutAsJsonAsync<Nsx>("https://localhost:7033/api/nsx/" + Nsx.Id, Nsx))
                 {
                     if (httpResponse.IsSuccessStatusCode)

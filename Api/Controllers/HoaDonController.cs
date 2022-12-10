@@ -58,7 +58,7 @@ namespace Api.Controllers
 
             var result = await _iHoaDonService.Update(hd);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // POST: api/hoadon
@@ -67,7 +67,7 @@ namespace Api.Controllers
         {
             var result = await _iHoaDonService.Add(hd);
 
-            return result != null ? CreatedAtAction("Get", new { id = hd.Id }, hd) : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? CreatedAtAction("Get", new { id = hd.Id }, hd) : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
 
         // DELETE: api/hoadon/5
@@ -83,7 +83,7 @@ namespace Api.Controllers
 
             var result = await _iHoaDonService.Remove(hd);
 
-            return result != null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
+            return result == null ? NoContent() : StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

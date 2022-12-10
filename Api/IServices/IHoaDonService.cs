@@ -7,11 +7,11 @@ namespace Api.IServices
     {
         Task<IEnumerable<HoaDon>> GetAll();
 
-        Task<string?> Add(HoaDon ctsp);
+        Task<string?> Add(HoaDon hd);
 
-        Task<string?> Update(HoaDon ctsp);
+        Task<string?> Update(HoaDon hd);
 
-        Task<string?> Remove(HoaDon ctsp);
+        Task<string?> Remove(HoaDon hd);
 
         Task<HoaDon?> GetById(Guid Id);
     }
